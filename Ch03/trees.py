@@ -21,8 +21,7 @@ def calcShannonEnt(dataSet):
     labelCounts = {}
     for featVec in dataSet: #the the number of unique elements and their occurance
         currentLabel = featVec[-1]
-        if currentLabel not in labelCounts.keys(): labelCounts[currentLabel] = 0
-        labelCounts[currentLabel] += 1
+        labelCounts[currentLabel] = labelCounts.get(currentLabel, 0) + 1
     shannonEnt = 0.0
     for key in labelCounts:
         prob = float(labelCounts[key])/numEntries
@@ -59,8 +58,7 @@ def chooseBestFeatureToSplit(dataSet):
 def majorityCnt(classList):
     classCount={}
     for vote in classList:
-        if vote not in classCount.keys(): classCount[vote] = 0
-        classCount[vote] += 1
+        classCount[vote] = classCount.get(vote, 0) + 1
     sortedClassCount = sorted(classCount.iteritems(), key=operator.itemgetter(1), reverse=True)
     return sortedClassCount[0][0]
 
@@ -78,7 +76,8 @@ def createTree(dataSet,labels):
     uniqueVals = set(featValues)
     for value in uniqueVals:
         subLabels = labels[:]       #copy all of labels, so trees don't mess up existing labels
-        myTree[bestFeatLabel][value] = createTree(splitDataSet(dataSet, bestFeat, value),subLabels)
+        subDataSet = splitDataSet(dataSet, bestFeat, value)
+        myTree[bestFeatLabel][value] = createTree(subDataSet, subLabels)
     return myTree                            
     
 def classify(inputTree,featLabels,testVec):
