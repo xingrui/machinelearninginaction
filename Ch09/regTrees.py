@@ -48,14 +48,14 @@ def modelErr(dataSet):
 def chooseBestSplit(dataSet, leafType=regLeaf, errType=regErr, ops=(1,4)):
     tolS = ops[0]; tolN = ops[1]
     #if all the target variables are the same value: quit and return value
-    if len(set(dataSet[:,-1].T.tolist()[0])) == 1: #exit cond 1
+    if len(set(dataSet.A[:,-1])) == 1: #exit cond 1
         return None, leafType(dataSet)
     m,n = shape(dataSet)
     #the choice of the best feature is driven by Reduction in RSS error from mean
     S = errType(dataSet)
     bestS = inf; bestIndex = 0; bestValue = 0
     for featIndex in range(n-1):
-        for splitVal in set(dataSet[:,featIndex].T.tolist()[0]):
+        for splitVal in set(dataSet.A[:,featIndex]):
             mat0, mat1 = binSplitDataSet(dataSet, featIndex, splitVal)
             if (shape(mat0)[0] < tolN) or (shape(mat1)[0] < tolN): continue
             newS = errType(mat0) + errType(mat1)
