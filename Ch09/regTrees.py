@@ -55,7 +55,8 @@ def chooseBestSplit(dataSet, leafType=regLeaf, errType=regErr, ops=(1,4)):
     S = errType(dataSet)
     bestS = inf; bestIndex = 0; bestValue = 0
     for featIndex in range(n-1):
-        for splitVal in set(dataSet[:,featIndex]):
+        for splitVal in set(dataSet[:,featIndex].T.tolist()[0]):
+            splitVal = mat(splitVal)
             mat0, mat1 = binSplitDataSet(dataSet, featIndex, splitVal)
             if (shape(mat0)[0] < tolN) or (shape(mat1)[0] < tolN): continue
             newS = errType(mat0) + errType(mat1)
