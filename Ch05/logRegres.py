@@ -17,7 +17,17 @@ def loadDataSet():
 def sigmoid(inX):
     return 1.0/(1+exp(-inX))
 
-def gradAscent(dataMatIn, classLabels):
+'''
+logitisc regression goal :
+minimized the total/average cost for following calculateCost function.
+'''
+def calculateCost(labelMat, sigmoidMat):
+    labelArr = array(labelMat)
+    sigmoidArr = array(sigmoidMat)
+    costFunction = -(labelArr * (log(sigmoidArr)) + (1 - labelArr) * log(1-sigmoidArr))
+    return sum(costFunction)
+
+def gradAscent(dataMatIn, classLabels, trace=False):
     dataMatrix = mat(dataMatIn)             #convert to NumPy matrix
     labelMat = mat(classLabels).transpose() #convert to NumPy matrix
     m,n = shape(dataMatrix)
@@ -28,6 +38,8 @@ def gradAscent(dataMatIn, classLabels):
         h = sigmoid(dataMatrix*weights)     #matrix mult
         error = (labelMat - h)              #vector subtraction
         weights = weights + alpha * dataMatrix.transpose()* error #matrix mult
+        # print total cost for each step. and we will see that the cost is decreasing.
+        if trace:print calculateCost(labelMat, h)
     return weights
 
 def plotBestFit(weights):
