@@ -84,7 +84,7 @@ def createTree(dataSet, leafType=regLeaf, errType=regErr, ops=(1,4)):#assume dat
     return retTree  
 
 def isTree(obj):
-    return (type(obj).__name__=='dict')
+    return (type(obj) == dict)
 
 def getMean(tree):
     if isTree(tree['right']): tree['right'] = getMean(tree['right'])
