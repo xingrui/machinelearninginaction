@@ -5,6 +5,28 @@ Chapter 5 source file for Machine Learing in Action
 '''
 from numpy import *
 from time import sleep
+import sys
+
+def preprocess(dataMatrix, labelMatrix):
+    m, n = shape(dataMatrix)
+    storeDataMat = mat(zeros((m, m)))
+    storeLabelMat = labelMatrix * labelMatrix.T
+    for i in xrange(0,m):
+        for j in xrange(0,m):
+            storeDataMat[i,j] = sum(dataMatrix[i] * dataMatrix[j].T)
+    return mat(storeDataMat.A * storeLabelMat.A)
+
+# goal : maximize this calculateValue result
+# under KKT conditions.
+def calculateValue(alphas, storeMat):
+    alphasMatrix = alphas * alphas.T
+    return sum(alphas) - 0.5 * sum(alphasMatrix.A * storeMat.A)
+
+# print value to stderr for differentiate from other logs.
+def traceLog(trace, alphas, storeMat):
+    if not trace:
+        return
+    print >>sys.stderr, 'calculateValue:', calculateValue(alphas, storeMat)
 
 def loadDataSet(fileName):
     dataMat = []; labelMat = []
@@ -28,10 +50,11 @@ def clipAlpha(aj,H,L):
         aj = L
     return aj
 
-def smoSimple(dataMatIn, classLabels, C, toler, maxIter):
+def smoSimple(dataMatIn, classLabels, C, toler, maxIter, trace=False):
     dataMatrix = mat(dataMatIn); labelMat = mat(classLabels).transpose()
     b = 0; m,n = shape(dataMatrix)
     alphas = mat(zeros((m,1)))
+    storeMat = preprocess(dataMatrix, labelMat)
     iter = 0
     while (iter < maxIter):
         alphaPairsChanged = 0
@@ -64,9 +87,11 @@ def smoSimple(dataMatIn, classLabels, C, toler, maxIter):
                 else: b = (b1 + b2)/2.0
                 alphaPairsChanged += 1
                 print "iter: %d i:%d, pairs changed %d" % (iter,i,alphaPairsChanged)
+                traceLog(trace, alphas, storeMat)
         if (alphaPairsChanged == 0): iter += 1
         else: iter = 0
         print "iteration number: %d" % iter
+    traceLog(trace, alphas, storeMat)
     return b,alphas
 
 def kernelTrans(X, A, kTup): #calc the kernel or transform data to a higher dimensional space
@@ -150,8 +175,9 @@ def innerL(i, oS):
         return 1
     else: return 0
 
-def smoP(dataMatIn, classLabels, C, toler, maxIter,kTup=('lin', 0)):    #full Platt SMO
+def smoP(dataMatIn, classLabels, C, toler, maxIter,kTup=('lin', 0), trace=False):    #full Platt SMO
     oS = optStruct(mat(dataMatIn),mat(classLabels).transpose(),C,toler, kTup)
+    storeMat = preprocess(mat(dataMatIn), mat(classLabels).transpose())
     iter = 0
     entireSet = True; alphaPairsChanged = 0
     while (iter < maxIter) and ((alphaPairsChanged > 0) or (entireSet)):
@@ -170,6 +196,8 @@ def smoP(dataMatIn, classLabels, C, toler, maxIter,kTup=('lin', 0)):    #full Pl
         if entireSet: entireSet = False #toggle entire set loop
         elif (alphaPairsChanged == 0): entireSet = True  
         print "iteration number: %d" % iter
+        traceLog(trace, oS.alphas, storeMat)
+    traceLog(trace, oS.alphas, storeMat)
     return oS.b,oS.alphas
 
 def calcWs(alphas,dataArr,classLabels):
