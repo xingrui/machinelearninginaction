@@ -6,15 +6,11 @@ Created on Jan 8, 2011
 from numpy import *
 
 def loadDataSet(fileName):      #general function to parse tab -delimited floats
-    numFeat = len(open(fileName).readline().split('\t')) - 1 #get number of fields 
     dataMat = []; labelMat = []
     fr = open(fileName)
     for line in fr.readlines():
-        lineArr =[]
         curLine = line.strip().split('\t')
-        for i in range(numFeat):
-            lineArr.append(float(curLine[i]))
-        dataMat.append(lineArr)
+        dataMat.append(map(float, curLine[:-1]))
         labelMat.append(float(curLine[-1]))
     return dataMat,labelMat
 
@@ -152,9 +148,8 @@ def searchForSet(retX, retY, setNum, yr, numPce, origPrc):
     searchURL = 'https://www.googleapis.com/shopping/search/v1/public/products?key=%s&country=US&q=lego+%d&alt=json' % (myAPIstr, setNum)
     pg = urllib2.urlopen(searchURL)
     retDict = json.loads(pg.read())
-    for i in range(len(retDict['items'])):
+    for currItem in retDict['items']:
         try:
-            currItem = retDict['items'][i]
             if currItem['product']['condition'] == 'new':
                 newFlag = 1
             else: newFlag = 0
