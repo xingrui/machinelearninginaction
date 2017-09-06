@@ -18,15 +18,18 @@ def preprocess(dataMatrix, labelMatrix):
 
 # goal : maximize this calculateValue result
 # under KKT conditions.
+# 1 / sqrt(wTw) means the min value of distance from super plane and points(support vector points)
+# it shows that the result is increasing, but the distance is not always increasing.
 def calculateValue(alphas, storeMat):
     alphasMatrix = alphas * alphas.T
-    return sum(alphas) - 0.5 * sum(alphasMatrix.A * storeMat.A)
+    wTw = sum(alphasMatrix.A * storeMat.A)
+    return sum(alphas) - 0.5 * wTw, 1 / sqrt(wTw)
 
 # print value to stderr for differentiate from other logs.
-def traceLog(trace, alphas, storeMat):
+def traceLog(trace, alphas, storeMat, indent=0):
     if not trace:
         return
-    print >>sys.stderr, 'calculateValue:', calculateValue(alphas, storeMat)
+    print >>sys.stderr, ' ' * indent, 'calculateValue:', calculateValue(alphas, storeMat)
 
 def loadDataSet(fileName):
     dataMat = []; labelMat = []
@@ -91,7 +94,7 @@ def smoSimple(dataMatIn, classLabels, C, toler, maxIter, trace=False):
         if (alphaPairsChanged == 0): iter += 1
         else: iter = 0
         print "iteration number: %d" % iter
-    traceLog(trace, alphas, storeMat)
+    traceLog(trace, alphas, storeMat, 4)
     return b,alphas
 
 def kernelTrans(X, A, kTup): #calc the kernel or transform data to a higher dimensional space
@@ -200,7 +203,7 @@ def smoP(dataMatIn, classLabels, C, toler, maxIter,kTup=('lin', 0), trace=False)
         if entireSet: entireSet = False #toggle entire set loop
         elif (alphaPairsChanged == 0): entireSet = True  
         print "iteration number: %d" % iter
-    traceLog(trace, oS.alphas, storeMat)
+    traceLog(trace, oS.alphas, storeMat, 4)
     return oS.b,oS.alphas
 
 def calcWs(alphas,dataArr,classLabels):
