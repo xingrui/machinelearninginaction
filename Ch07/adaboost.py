@@ -57,7 +57,7 @@ def buildStump(dataArr,classLabels,D):
     return bestStump,minError,bestClasEst
 
 
-def adaBoostTrainDS(dataArr,classLabels,numIt=40):
+def adaBoostTrainDS(dataArr,classLabels,numIt=40,retAgg=False):
     weakClassArr = []
     m = shape(dataArr)[0]
     D = mat(ones((m,1))/m)   #init D to all equal
@@ -79,7 +79,8 @@ def adaBoostTrainDS(dataArr,classLabels,numIt=40):
         errorRate = aggErrors.sum()/m
         print "total error: ",errorRate
         if errorRate == 0.0: break
-    return weakClassArr
+    if retAgg:return weakClassArr, aggClassEst
+    else:return weakClassArr
 
 def adaClassify(datToClass,classifierArr):
     dataMatrix = mat(datToClass)#do stuff similar to last aggClassEst in adaBoostTrainDS
@@ -104,7 +105,7 @@ def plotROC(predStrengths, classLabels):
     fig.clf()
     ax = plt.subplot(111)
     #loop through all the values, drawing a line segment at each point
-    for index in sortedIndicies.tolist()[0]:
+    for index in sortedIndicies.A[0]:
         if classLabels[index] == 1.0:
             delX = 0; delY = yStep;
         else:
