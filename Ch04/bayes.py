@@ -4,6 +4,7 @@ Created on Oct 19, 2010
 @author: Peter
 '''
 from numpy import *
+import operator
 
 def loadDataSet():
     postingList=[['my', 'dog', 'has', 'flea', 'problems', 'help', 'please'],
@@ -161,11 +162,11 @@ def getTopWords(ny,sf):
     for i in range(len(p0V)):
         if p0V[i] > -6.0 : topSF.append((vocabList[i],p0V[i]))
         if p1V[i] > -6.0 : topNY.append((vocabList[i],p1V[i]))
-    sortedSF = sorted(topSF, key=lambda pair: pair[1], reverse=True)
+    sortedSF = sorted(topSF, key=operator.itemgetter(1), reverse=True)
     print "SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**"
     for item in sortedSF:
         print item[0]
-    sortedNY = sorted(topNY, key=lambda pair: pair[1], reverse=True)
+    sortedNY = sorted(topNY, key=operator.itemgetter(1), reverse=True)
     print "NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**"
     for item in sortedNY:
         print item[0]

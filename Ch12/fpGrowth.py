@@ -10,6 +10,8 @@ find association rules.
 
 @author: Peter
 '''
+import operator
+
 class treeNode:
     def __init__(self, nameValue, numOccur, parentNode):
         self.name = nameValue
@@ -48,7 +50,7 @@ def createTree(dataSet, minSup=1): #create FP-tree from dataset but don't mine
             if item in freqItemSet:
                 localD[item] = headerTable[item][0]
         if len(localD) > 0:
-            orderedItems = [v[0] for v in sorted(localD.items(), key=lambda p: p[1], reverse=True)]
+            orderedItems = [v[0] for v in sorted(localD.iteritems(), key=operator.itemgetter(1), reverse=True)]
             updateTree(orderedItems, retTree, headerTable, count)#populate tree with ordered freq itemset
     return retTree, headerTable #return tree and header table
 
@@ -85,7 +87,7 @@ def findPrefixPath(basePat, treeNode): #treeNode comes from header table
     return condPats
 
 def mineTree(inTree, headerTable, minSup, preFix, freqItemList):
-    bigL = [v[0] for v in sorted(headerTable.items(), key=lambda p: p[1])]#(sort header table)
+    bigL = [v[0] for v in sorted(headerTable.iteritems(), key=operator.itemgetter(1))]#(sort header table)
     for basePat in bigL:  #start from bottom of header table
         newFreqSet = preFix.copy()
         newFreqSet.add(basePat)
