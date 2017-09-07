@@ -46,7 +46,7 @@ def buildStump(dataArr,classLabels,D):
                 predictedVals = stumpClassify(dataMatrix,i,threshVal,inequal)#call stump classify with i, j, lessThan
                 errArr = mat(ones((m,1)))
                 errArr[predictedVals == labelMat] = 0
-                weightedError = D.T*errArr  #calc total error multiplied by D
+                weightedError = sum(multiply(D,errArr))  #calc total error multiplied by D
                 #print "split: dim %d, thresh %.2f, thresh ineqal: %s, the weighted error is %.3f" % (i, threshVal, inequal, weightedError)
                 if weightedError < minError:
                     minError = weightedError
