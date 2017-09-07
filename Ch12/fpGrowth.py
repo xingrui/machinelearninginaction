@@ -44,7 +44,7 @@ def createTree(dataSet, minSup=1): #create FP-tree from dataset but don't mine
         headerTable[k] = [headerTable[k], None] #reformat headerTable to use Node link 
     #print 'headerTable: ',headerTable
     retTree = treeNode('Null Set', 1, None) #create tree
-    for tranSet, count in dataSet.items():  #go through dataset 2nd time
+    for tranSet, count in dataSet.iteritems():  #go through dataset 2nd time
         localD = {}
         for item in tranSet:  #put transaction items in order
             if item in freqItemSet:
@@ -118,16 +118,15 @@ def createInitSet(dataSet):
         retDict[frozenset(trans)] = 1
     return retDict
 
-import twitter
-from time import sleep
-import re
-
 def textParse(bigString):
+    import re
     urlsRemoved = re.sub('(http:[/][/]|www.)([a-z]|[A-Z]|[0-9]|[/.]|[~])*', '', bigString)    
     listOfTokens = re.split(r'\W*', urlsRemoved)
     return [tok.lower() for tok in listOfTokens if len(tok) > 2]
 
 def getLotsOfTweets(searchStr):
+    import twitter
+    from time import sleep
     CONSUMER_KEY = ''
     CONSUMER_SECRET = ''
     ACCESS_TOKEN_KEY = ''
