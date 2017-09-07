@@ -24,8 +24,7 @@ def scanD(D, Ck, minSupport):
     for tid in D:
         for can in Ck:
             if can.issubset(tid):
-                if not ssCnt.has_key(can): ssCnt[can]=1
-                else: ssCnt[can] += 1
+                ssCnt[can] = ssCnt.get(can, 0) + 1
     numItems = float(len(D))
     retList = []
     supportData = {}
@@ -101,10 +100,10 @@ def pntRules(ruleList, itemMeaning):
         print       #print a blank line
         
             
-from time import sleep
-from votesmart import votesmart
-votesmart.apikey = 'get your api key first'
 def getActionIds():
+    from time import sleep
+    from votesmart import votesmart
+    votesmart.apikey = 'get your api key first'
     actionIdList = []; billTitleList = []
     fr = open('recent20bills.txt') 
     for line in fr.readlines():
@@ -124,6 +123,9 @@ def getActionIds():
     return actionIdList, billTitleList
         
 def getTransList(actionIdList, billTitleList): #this will return a list of lists containing ints
+    from time import sleep
+    from votesmart import votesmart
+    votesmart.apikey = 'get your api key first'
     itemMeaning = ['Republican', 'Democratic']#list of what each item stands for
     for billTitle in billTitleList:#fill up itemMeaning list
         itemMeaning.append('%s -- Nay' % billTitle)
