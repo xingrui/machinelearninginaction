@@ -51,7 +51,7 @@ def kMeans(dataSet, k, distMeas=distEclud, createCent=randCent):
 def biKmeans(dataSet, k, distMeas=distEclud):
     m = shape(dataSet)[0]
     clusterAssment = mat(zeros((m,2)))
-    centroid0 = mean(dataSet, axis=0).tolist()[0]
+    centroid0 = mean(dataSet.A, axis=0).tolist()
     centList =[centroid0] #create a list with one centroid
     for j in range(m):#calc initial Error
         clusterAssment[j,1] = distMeas(mat(centroid0), dataSet[j,:])**2
@@ -72,14 +72,14 @@ def biKmeans(dataSet, k, distMeas=distEclud):
         bestClustAss[nonzero(bestClustAss[:,0].A == 0)[0],0] = bestCentToSplit
         print 'the bestCentToSplit is: ',bestCentToSplit
         print 'the len of bestClustAss is: ', len(bestClustAss)
-        centList[bestCentToSplit] = bestNewCents[0,:].tolist()[0]#replace a centroid with two best centroids 
-        centList.append(bestNewCents[1,:].tolist()[0])
+        centList[bestCentToSplit] = bestNewCents.A[0,:].tolist()#replace a centroid with two best centroids 
+        centList.append(bestNewCents.A[1,:].tolist())
         clusterAssment[nonzero(clusterAssment[:,0].A == bestCentToSplit)[0],:]= bestClustAss#reassign new clusters, and SSE
     return mat(centList), clusterAssment
 
-import urllib
-import json
 def geoGrab(stAddress, city):
+    import urllib
+    import json
     apiStem = 'http://where.yahooapis.com/geocode?'  #create a dict and constants for the goecoder
     params = {}
     params['flags'] = 'J'#JSON return type
@@ -91,8 +91,8 @@ def geoGrab(stAddress, city):
     c=urllib.urlopen(yahooApi)
     return json.loads(c.read())
 
-from time import sleep
 def massPlaceFind(fileName):
+    from time import sleep
     fw = open('places.txt', 'w')
     for line in open(fileName).readlines():
         line = line.strip()
@@ -113,9 +113,9 @@ def distSLC(vecA, vecB):#Spherical Law of Cosines
                       cos(pi * (vecB[0,0]-vecA[0,0]) /180)
     return arccos(a + b)*6371.0 #pi is imported with numpy
 
-import matplotlib
-import matplotlib.pyplot as plt
 def clusterClubs(numClust=5):
+    import matplotlib
+    import matplotlib.pyplot as plt
     datList = []
     for line in open('places.txt').readlines():
         lineArr = line.split('\t')
