@@ -9,10 +9,18 @@ def testLoadDataSet(filename):
 
 def testBuildStump():
     D = mat(ones((5,1))/5)
-    print D
     datMat, classLabels = adaboost.loadSimpData()
     print adaboost.buildStump(datMat, classLabels, D)
+
+def testAdaBoost():
+    datMat, classLabels = adaboost.loadSimpData()
+    classifierArray = adaboost.adaBoostTrainDS(datMat, classLabels, 9)
+    print classifierArray
+    print adaboost.adaClassify([0,0],classifierArray)
+    print adaboost.adaClassify([[5,5],[0,0]],classifierArray)
+    print adaboost.adaClassify([3,0],classifierArray)
 
 if __name__ == "__main__":
     testLoadDataSet('horseColicTest2.txt')
     testBuildStump()
+    testAdaBoost()
