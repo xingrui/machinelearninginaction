@@ -22,9 +22,7 @@ logitisc regression goal :
 minimized the total/average cost for following calculateCost function.
 '''
 def calculateCost(labelMat, sigmoidMat):
-    labelArr = array(labelMat)
-    sigmoidArr = array(sigmoidMat)
-    costFunction = -(labelArr * (log(sigmoidArr)) + (1 - labelArr) * log(1 - sigmoidArr))
+    costFunction = -(multiply(labelMat, log(sigmoidMat)) + multiply((1 - labelMat), log(1 - sigmoidMat)))
     return sum(costFunction)
 
 def gradAscent(dataMatIn, classLabels, trace=False):
