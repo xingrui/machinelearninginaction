@@ -10,19 +10,19 @@ import sys
 def preprocess(dataMatrix, labelMatrix):
     m, n = shape(dataMatrix)
     storeDataMat = mat(zeros((m, m)))
-    storeLabelMat = labelMatrix * labelMatrix.T
+    storeLabelMat = dot(labelMatrix, labelMatrix.T)
     for i in xrange(0,m):
         for j in xrange(0,m):
-            storeDataMat[i,j] = sum(dataMatrix[i] * dataMatrix[j].T)
-    return mat(storeDataMat.A * storeLabelMat.A)
+            storeDataMat[i,j] = sum(dot(dataMatrix[i], dataMatrix[j].T))
+    return multiply(storeDataMat, storeLabelMat)
 
 # goal : maximize this calculateValue result
 # under KKT conditions.
 # 1 / sqrt(wTw) means the min value of distance from super plane and points(support vector points)
 # it shows that the result is increasing, but the distance is not always increasing.
 def calculateValue(alphas, storeMat):
-    alphasMatrix = alphas * alphas.T
-    wTw = sum(alphasMatrix.A * storeMat.A)
+    alphasMatrix = dot(alphas, alphas.T)
+    wTw = sum(multiply(alphasMatrix, storeMat))
     return sum(alphas) - 0.5 * wTw, 1 / sqrt(wTw)
 
 # print value to stderr for differentiate from other logs.
