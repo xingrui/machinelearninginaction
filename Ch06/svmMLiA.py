@@ -13,7 +13,7 @@ def preprocess(dataMatrix, labelMatrix):
     storeLabelMat = dot(labelMatrix, labelMatrix.T)
     for i in xrange(0,m):
         for j in xrange(0,m):
-            storeDataMat[i,j] = vdot(dataMatrix[i], dataMatrix[j])
+            storeDataMat[i,j] = vdot(dataMatrix.A[i], dataMatrix.A[j])
     return multiply(storeDataMat, storeLabelMat)
 
 # goal : maximize this calculateValue result
@@ -21,8 +21,8 @@ def preprocess(dataMatrix, labelMatrix):
 # 1 / sqrt(wTw) means the min value of distance from super plane and points(support vector points)
 # it shows that the result is increasing, but the distance is not always increasing.
 def calculateValue(alphas, storeMat):
-    alphas = mat(alphas).T
-    alphasMatrix = dot(alphas, alphas.T)
+    alphas = mat(alphas)
+    alphasMatrix = dot(alphas.T, alphas)
     wTw = sum(multiply(alphasMatrix, storeMat))
     return sum(alphas) - 0.5 * wTw, 1 / sqrt(wTw)
 
