@@ -13,7 +13,7 @@ def preprocess(dataMatrix, labelMatrix):
     storeLabelMat = dot(labelMatrix, labelMatrix.T)
     for i in xrange(0,m):
         for j in xrange(0,m):
-            storeDataMat[i,j] = sum(dot(dataMatrix[i], dataMatrix[j].T))
+            storeDataMat[i,j] = vdot(dataMatrix[i], dataMatrix[j])
     return multiply(storeDataMat, storeLabelMat)
 
 # goal : maximize this calculateValue result
@@ -126,8 +126,8 @@ class optStruct:
             self.K[:,i] = kernelTrans(self.X, self.X[i,:], kTup)
         
 def calcEk(oS, k):
-    fXk = float(multiply(oS.alphas,oS.labelMat)*oS.K[:,k] + oS.b)
-    Ek = fXk - float(oS.labelMat[k])
+    fXk = vdot(multiply(oS.alphas,oS.labelMat), oS.K.A[:,k]) + oS.b
+    Ek = fXk - oS.labelMat[k]
     return Ek
         
 def selectJ(i, oS, Ei):         #this is the second choice -heurstic, and calcs Ej
