@@ -21,6 +21,7 @@ def preprocess(dataMatrix, labelMatrix):
 # 1 / sqrt(wTw) means the min value of distance from super plane and points(support vector points)
 # it shows that the result is increasing, but the distance is not always increasing.
 def calculateValue(alphas, storeMat):
+    alphas = mat(alphas).T
     alphasMatrix = dot(alphas, alphas.T)
     wTw = sum(multiply(alphasMatrix, storeMat))
     return sum(alphas) - 0.5 * wTw, 1 / sqrt(wTw)
@@ -54,10 +55,10 @@ def clipAlpha(aj,H,L):
     return aj
 
 def smoSimple(dataMatIn, classLabels, C, toler, maxIter, trace=False):
-    dataMatrix = mat(dataMatIn); labelMat = mat(classLabels).transpose()
+    dataMatrix = mat(dataMatIn); labelMat = array(classLabels)
     b = 0; m,n = shape(dataMatrix)
-    alphas = mat(zeros((m,1)))
-    storeMat = preprocess(dataMatrix, labelMat)
+    alphas = zeros(m)
+    storeMat = preprocess(dataMatrix, mat(labelMat).T)
     iter = 0
     while (iter < maxIter):
         alphaPairsChanged = 0
@@ -68,7 +69,7 @@ def smoSimple(dataMatIn, classLabels, C, toler, maxIter, trace=False):
                 j = selectJrand(i,m)
                 fXj = float(multiply(alphas,labelMat).T*(dataMatrix*dataMatrix[j,:].T)) + b
                 Ej = fXj - float(labelMat[j])
-                alphaIold = alphas[i].copy(); alphaJold = alphas[j].copy();
+                alphaIold = alphas[i]; alphaJold = alphas[j];
                 if (labelMat[i] != labelMat[j]):
                     L = max(0, alphas[j] - alphas[i])
                     H = min(C, C + alphas[j] - alphas[i])
@@ -117,7 +118,7 @@ class optStruct:
         self.C = C
         self.tol = toler
         self.m = shape(dataMatIn)[0]
-        self.alphas = mat(zeros((self.m,1)))
+        self.alphas = zeros(self.m)
         self.b = 0
         self.eCache = mat(zeros((self.m,2))) #first column is valid flag
         self.K = mat(zeros((self.m,self.m)))
@@ -125,7 +126,7 @@ class optStruct:
             self.K[:,i] = kernelTrans(self.X, self.X[i,:], kTup)
         
 def calcEk(oS, k):
-    fXk = float(multiply(oS.alphas,oS.labelMat).T*oS.K[:,k] + oS.b)
+    fXk = float(multiply(oS.alphas,oS.labelMat)*oS.K[:,k] + oS.b)
     Ek = fXk - float(oS.labelMat[k])
     return Ek
         
@@ -154,7 +155,7 @@ def innerL(i, oS):
     Ei = calcEk(oS, i)
     if ((oS.labelMat[i]*Ei < -oS.tol) and (oS.alphas[i] < oS.C)) or ((oS.labelMat[i]*Ei > oS.tol) and (oS.alphas[i] > 0)):
         j,Ej = selectJ(i, oS, Ei) #this has been changed from selectJrand
-        alphaIold = oS.alphas[i].copy(); alphaJold = oS.alphas[j].copy();
+        alphaIold = oS.alphas[i]; alphaJold = oS.alphas[j];
         if (oS.labelMat[i] != oS.labelMat[j]):
             L = max(0, oS.alphas[j] - oS.alphas[i])
             H = min(oS.C, oS.C + oS.alphas[j] - oS.alphas[i])
@@ -179,8 +180,8 @@ def innerL(i, oS):
     else: return 0
 
 def smoP(dataMatIn, classLabels, C, toler, maxIter,kTup=('lin', 0), trace=False):    #full Platt SMO
-    oS = optStruct(mat(dataMatIn),mat(classLabels).transpose(),C,toler, kTup)
-    storeMat = preprocess(mat(dataMatIn), mat(classLabels).transpose())
+    oS = optStruct(mat(dataMatIn),array(classLabels),C,toler, kTup)
+    storeMat = preprocess(mat(dataMatIn), mat(classLabels).T)
     iter = 0
     entireSet = True; alphaPairsChanged = 0
     while (iter < maxIter) and ((alphaPairsChanged > 0) or (entireSet)):
@@ -193,7 +194,7 @@ def smoP(dataMatIn, classLabels, C, toler, maxIter,kTup=('lin', 0), trace=False)
                 if innerRes : traceLog(trace, oS.alphas, storeMat)
             iter += 1
         else:#go over non-bound (railed) alphas
-            nonBoundIs = nonzero((oS.alphas.A > 0) * (oS.alphas.A < C))[0]
+            nonBoundIs = nonzero((oS.alphas > 0) * (oS.alphas < C))[0]
             for i in nonBoundIs:
                 innerRes = innerL(i,oS)
                 alphaPairsChanged += innerRes
@@ -217,6 +218,7 @@ def calcWs(alphas,dataArr,classLabels):
 def testRbf(k1=1.3):
     dataArr,labelArr = loadDataSet('testSetRBF.txt')
     b,alphas = smoP(dataArr, labelArr, 200, 0.0001, 10000, ('rbf', k1)) #C=200 important
+    alphas = mat(alphas).T
     datMat=mat(dataArr); labelMat = mat(labelArr).transpose()
     svInd=nonzero(alphas.A>0)[0]
     sVs=datMat[svInd] #get matrix of only support vectors
@@ -266,6 +268,7 @@ def loadImages(dirName):
 def testDigits(kTup=('rbf', 10)):
     dataArr,labelArr = loadImages('trainingDigits')
     b,alphas = smoP(dataArr, labelArr, 200, 0.0001, 10000, kTup)
+    alphas = mat(alphas).T
     datMat=mat(dataArr); labelMat = mat(labelArr).transpose()
     svInd=nonzero(alphas.A>0)[0]
     sVs=datMat[svInd] 
