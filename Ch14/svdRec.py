@@ -3,6 +3,7 @@ Created on Mar 8, 2011
 
 @author: Peter
 '''
+import operator
 from numpy import *
 from numpy import linalg as la
 
@@ -81,7 +82,7 @@ def recommend(dataMat, user, N=3, simMeas=cosSim, estMethod=standEst):
     for item in unratedItems:
         estimatedScore = estMethod(dataMat, user, simMeas, item)
         itemScores.append((item, estimatedScore))
-    return sorted(itemScores, key=lambda jj: jj[1], reverse=True)[:N]
+    return sorted(itemScores, key=operator.itemgetter(1), reverse=True)[:N]
 
 def printMat(inMat, thresh=0.8):
     for i in range(32):
