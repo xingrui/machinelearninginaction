@@ -47,8 +47,8 @@ def standEst(dataMat, user, simMeas, item):
     for j in range(n):
         userRating = dataMat[user,j]
         if userRating == 0: continue
-        overLap = nonzero(logical_and(dataMat[:,item].A>0, \
-                                      dataMat[:,j].A>0))[0]
+        overLap = nonzero(logical_and(dataMat.A[:,item]>0, \
+                                      dataMat.A[:,j]>0))[0]
         if len(overLap) == 0: similarity = 0
         else: similarity = simMeas(dataMat[overLap,item], \
                                    dataMat[overLap,j])
@@ -76,7 +76,7 @@ def svdEst(dataMat, user, simMeas, item):
     else: return ratSimTotal/simTotal
 
 def recommend(dataMat, user, N=3, simMeas=cosSim, estMethod=standEst):
-    unratedItems = nonzero(dataMat[user,:].A==0)[1]#find unrated items 
+    unratedItems = nonzero(dataMat.A[user,:]==0)[0]#find unrated items 
     if len(unratedItems) == 0: return 'you rated everything'
     itemScores = []
     for item in unratedItems:

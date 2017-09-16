@@ -6,5 +6,9 @@ def testbiKmeans():
     centList, myNewAssments = kMeans.biKmeans(datMat, 3)
     print centList 
 
+def testMap():
+    kMeans.clusterClubs()
+
 if __name__ == "__main__":
     testbiKmeans()
+    #testMap()

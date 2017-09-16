@@ -44,7 +44,7 @@ def kMeans(dataSet, k, distMeas=distEclud, createCent=randCent):
             clusterAssment[i,:] = minIndex,minDist**2
         print centroids
         for cent in range(k):#recalculate centroids
-            ptsInClust = dataSet[nonzero(clusterAssment[:,0].A==cent)[0]]#get all the point in this cluster
+            ptsInClust = dataSet[nonzero(clusterAssment.A[:,0]==cent)[0]]#get all the point in this cluster
             centroids[cent,:] = mean(ptsInClust, axis=0) #assign centroid to mean 
     return centroids, clusterAssment
 
@@ -58,23 +58,23 @@ def biKmeans(dataSet, k, distMeas=distEclud):
     while (len(centList) < k):
         lowestSSE = inf
         for i in range(len(centList)):
-            ptsInCurrCluster = dataSet[nonzero(clusterAssment[:,0].A==i)[0],:]#get the data points currently in cluster i
+            ptsInCurrCluster = dataSet[nonzero(clusterAssment.A[:,0]==i)[0],:]#get the data points currently in cluster i
             centroidMat, splitClustAss = kMeans(ptsInCurrCluster, 2, distMeas)
             sseSplit = sum(splitClustAss[:,1])#compare the SSE to the currrent minimum
-            sseNotSplit = sum(clusterAssment[nonzero(clusterAssment[:,0].A!=i)[0],1])
+            sseNotSplit = sum(clusterAssment[nonzero(clusterAssment.A[:,0]!=i)[0],1])
             print "sseSplit, and notSplit: ",sseSplit,sseNotSplit
             if (sseSplit + sseNotSplit) < lowestSSE:
                 bestCentToSplit = i
                 bestNewCents = centroidMat
                 bestClustAss = splitClustAss.copy()
                 lowestSSE = sseSplit + sseNotSplit
-        bestClustAss[nonzero(bestClustAss[:,0].A == 1)[0],0] = len(centList) #change 1 to 3,4, or whatever
-        bestClustAss[nonzero(bestClustAss[:,0].A == 0)[0],0] = bestCentToSplit
+        bestClustAss[nonzero(bestClustAss.A[:,0] == 1)[0],0] = len(centList) #change 1 to 3,4, or whatever
+        bestClustAss[nonzero(bestClustAss.A[:,0] == 0)[0],0] = bestCentToSplit
         print 'the bestCentToSplit is: ',bestCentToSplit
         print 'the len of bestClustAss is: ', len(bestClustAss)
         centList[bestCentToSplit] = bestNewCents.A[0,:].tolist()#replace a centroid with two best centroids 
         centList.append(bestNewCents.A[1,:].tolist())
-        clusterAssment[nonzero(clusterAssment[:,0].A == bestCentToSplit)[0],:]= bestClustAss#reassign new clusters, and SSE
+        clusterAssment[nonzero(clusterAssment.A[:,0] == bestCentToSplit)[0],:]= bestClustAss#reassign new clusters, and SSE
     return mat(centList), clusterAssment
 
 def geoGrab(stAddress, city):
@@ -134,6 +134,6 @@ def clusterClubs(numClust=5):
     for i in range(numClust):
         ptsInCurrCluster = datMat[nonzero(clustAssing[:,0].A==i)[0],:]
         markerStyle = scatterMarkers[i % len(scatterMarkers)]
-        ax1.scatter(ptsInCurrCluster[:,0].flatten().A[0], ptsInCurrCluster[:,1].flatten().A[0], marker=markerStyle, s=90)
-    ax1.scatter(myCentroids[:,0].flatten().A[0], myCentroids[:,1].flatten().A[0], marker='+', s=300)
+        ax1.scatter(ptsInCurrCluster.A[:,0], ptsInCurrCluster.A[:,1], marker=markerStyle, s=90)
+    ax1.scatter(myCentroids.A[:,0], myCentroids.A[:,1], marker='+', s=300)
     plt.show()

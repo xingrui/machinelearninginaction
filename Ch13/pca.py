@@ -27,6 +27,6 @@ def replaceNanWithMean():
     datMat = loadDataSet('secom.data', ' ')
     numFeat = shape(datMat)[1]
     for i in range(numFeat):
-        meanVal = mean(datMat[nonzero(~isnan(datMat[:,i].A))[0],i]) #values that are not NaN (a number)
-        datMat[nonzero(isnan(datMat[:,i].A))[0],i] = meanVal  #set NaN values to mean
+        meanVal = mean(datMat[nonzero(~isnan(datMat.A[:,i]))[0],i]) #values that are not NaN (a number)
+        datMat[nonzero(isnan(datMat.A[:,i]))[0],i] = meanVal  #set NaN values to mean
     return datMat
