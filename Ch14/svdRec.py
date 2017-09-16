@@ -62,7 +62,7 @@ def svdEst(dataMat, user, simMeas, item):
     n = shape(dataMat)[1]
     simTotal = 0.0; ratSimTotal = 0.0
     U,Sigma,VT = la.svd(dataMat)
-    Sig4 = mat(eye(4)*Sigma[:4]) #arrange Sig4 into a diagonal matrix
+    Sig4 = mat(diag(Sigma[:4]))
     xformedItems = dataMat.T * U[:,:4] * Sig4.I  #create transformed items
     for j in range(n):
         userRating = dataMat[user,j]
@@ -103,9 +103,7 @@ def imgCompress(numSV=3, thresh=0.8):
     print "****original matrix******"
     printMat(myMat, thresh)
     U,Sigma,VT = la.svd(myMat)
-    SigRecon = mat(zeros((numSV, numSV)))
-    for k in range(numSV):#construct diagonal matrix from vector
-        SigRecon[k,k] = Sigma[k]
+    SigRecon = diag(Sigma[:numSV])
     reconMat = U[:,:numSV]*SigRecon*VT[:numSV,:]
     print "****reconstructed matrix using %d singular values******" % numSV
     printMat(reconMat, thresh)
