@@ -208,7 +208,7 @@ def smoP(dataMatIn, classLabels, C, toler, maxIter,kTup=('lin', 0), trace=False)
     return oS.b,oS.alphas
 
 def calcWs(alphas,dataArr,classLabels):
-    X = mat(dataArr); labelMat = mat(classLabels).transpose()
+    X = mat(dataArr); labelMat = mat(classLabels).T
     m,n = shape(X)
     w = zeros((n,1))
     for i in range(m):
@@ -219,7 +219,7 @@ def testRbf(k1=1.3):
     dataArr,labelArr = loadDataSet('testSetRBF.txt')
     b,alphas = smoP(dataArr, labelArr, 200, 0.0001, 10000, ('rbf', k1)) #C=200 important
     alphas = mat(alphas).T
-    datMat=mat(dataArr); labelMat = mat(labelArr).transpose()
+    datMat=mat(dataArr); labelMat = mat(labelArr).T
     svInd=nonzero(alphas.A>0)[0]
     sVs=datMat[svInd] #get matrix of only support vectors
     labelSV = labelMat[svInd];
@@ -233,7 +233,7 @@ def testRbf(k1=1.3):
     print "the training error rate is: %f" % (float(errorCount)/m)
     dataArr,labelArr = loadDataSet('testSetRBF2.txt')
     errorCount = 0
-    datMat=mat(dataArr); labelMat = mat(labelArr).transpose()
+    datMat=mat(dataArr); labelMat = mat(labelArr).T
     m,n = shape(datMat)
     for i in range(m):
         kernelEval = kernelTrans(sVs,datMat[i,:],('rbf', k1))
@@ -269,7 +269,7 @@ def testDigits(kTup=('rbf', 10)):
     dataArr,labelArr = loadImages('trainingDigits')
     b,alphas = smoP(dataArr, labelArr, 200, 0.0001, 10000, kTup)
     alphas = mat(alphas).T
-    datMat=mat(dataArr); labelMat = mat(labelArr).transpose()
+    datMat=mat(dataArr); labelMat = mat(labelArr).T
     svInd=nonzero(alphas.A>0)[0]
     sVs=datMat[svInd] 
     labelSV = labelMat[svInd];
@@ -283,7 +283,7 @@ def testDigits(kTup=('rbf', 10)):
     print "the training error rate is: %f" % (float(errorCount)/m)
     dataArr,labelArr = loadImages('testDigits')
     errorCount = 0
-    datMat=mat(dataArr); labelMat = mat(labelArr).transpose()
+    datMat=mat(dataArr); labelMat = mat(labelArr).T
     m,n = shape(datMat)
     for i in range(m):
         kernelEval = kernelTrans(sVs,datMat[i,:],kTup)

@@ -27,7 +27,7 @@ def calculateCost(labelMat, sigmoidMat):
 
 def gradAscent(dataMatIn, classLabels, trace=False):
     dataMatrix = mat(dataMatIn)             #convert to NumPy matrix
-    labelMat = mat(classLabels).transpose() #convert to NumPy matrix
+    labelMat = mat(classLabels).T #convert to NumPy matrix
     m,n = shape(dataMatrix)
     alpha = 0.001
     maxCycles = 500
@@ -35,7 +35,7 @@ def gradAscent(dataMatIn, classLabels, trace=False):
     for k in range(maxCycles):              #heavy on matrix operations
         h = sigmoid(dataMatrix*weights)     #matrix mult
         error = (labelMat - h)              #vector subtraction
-        weights = weights + alpha * dataMatrix.transpose()* error #matrix mult
+        weights = weights + alpha * dataMatrix.T * error #matrix mult
         # print total cost for each step. and we will see that the cost is decreasing.
         if trace:print calculateCost(labelMat, h)
     return weights

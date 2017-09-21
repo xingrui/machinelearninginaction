@@ -139,10 +139,10 @@ def stageWise(xArr,yArr,eps=0.01,numIt=100):
 #        currentRow = soup.findAll('table', r="%d" % i)
 #    fw.close()
     
-from time import sleep
-import json
-import urllib2
 def searchForSet(retX, retY, setNum, yr, numPce, origPrc):
+    import urllib2
+    import json
+    from time import sleep
     sleep(10)
     myAPIstr = 'AIzaSyD2cR2KFyx12hXu6PFU-wrWot3NXvko8vY'
     searchURL = 'https://www.googleapis.com/shopping/search/v1/public/products?key=%s&country=US&q=lego+%d&alt=json' % (myAPIstr, setNum)

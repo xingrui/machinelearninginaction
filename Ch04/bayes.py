@@ -17,7 +17,7 @@ def loadDataSet():
     return postingList,classVec
                  
 def createVocabList(dataSet):
-    vocabSet = set([])  #create empty set
+    vocabSet = set()  #create empty set
     for document in dataSet:
         vocabSet = vocabSet | set(document) #union of the two sets
     return list(vocabSet)
@@ -113,7 +113,6 @@ def spamTest():
     #return vocabList,fullText
 
 def calcMostFreq(vocabList,fullText):
-    import operator
     freqDict = {}
     for token in vocabList:
         freqDict[token]=fullText.count(token)
@@ -156,7 +155,6 @@ def localWords(feed1,feed0):
     return vocabList,p0V,p1V
 
 def getTopWords(ny,sf):
-    import operator
     vocabList,p0V,p1V=localWords(ny,sf)
     topNY=[]; topSF=[]
     for i in range(len(p0V)):

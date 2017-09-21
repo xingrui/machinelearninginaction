@@ -56,7 +56,7 @@ def createTree(dataSet, minSup=1): #create FP-tree from dataset but don't mine
 
 def updateTree(items, inTree, headerTable, count):
     if items[0] in inTree.children:#check if orderedItems[0] in retTree.children
-        inTree.children[items[0]].inc(count) #incrament count
+        inTree.children[items[0]].inc(count) #increment count
     else:   #add items[0] to inTree.children
         inTree.children[items[0]] = treeNode(items[0], count, inTree)
         if headerTable[items[0]][1] == None: #update header table 
@@ -151,7 +151,7 @@ def mineTweets(tweetArr, minSup=5):
     initSet = createInitSet(parsedList)
     myFPtree, myHeaderTab = createTree(initSet, minSup)
     myFreqList = []
-    mineTree(myFPtree, myHeaderTab, minSup, set([]), myFreqList)
+    mineTree(myFPtree, myHeaderTab, minSup, set(), myFreqList)
     return myFreqList
 
 #minSup = 3
@@ -160,4 +160,4 @@ def mineTweets(tweetArr, minSup=5):
 #myFPtree, myHeaderTab = createTree(initSet, minSup)
 #myFPtree.disp()
 #myFreqList = []
-#mineTree(myFPtree, myHeaderTab, minSup, set([]), myFreqList)
+#mineTree(myFPtree, myHeaderTab, minSup, set(), myFreqList)
