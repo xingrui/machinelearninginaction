@@ -5,6 +5,7 @@ Decision Tree Source Code for Machine Learning in Action Ch. 3
 '''
 from math import log
 import operator
+from collections import Counter
 
 def createDataSet():
     dataSet = [[1, 1, 'yes'],
@@ -18,14 +19,9 @@ def createDataSet():
 
 def calcShannonEnt(dataSet):
     numEntries = len(dataSet)
-    labelCounts = {}
-    for featVec in dataSet: #the the number of unique elements and their occurance
-        currentLabel = featVec[-1]
-        labelCounts[currentLabel] = labelCounts.get(currentLabel, 0) + 1
-    shannonEnt = 0.0
-    for key in labelCounts:
-        prob = float(labelCounts[key])/numEntries
-        shannonEnt -= prob * log(prob,2) #log base 2
+    labelCounter = Counter(map(lambda x:x[-1], dataSet))
+    probList = map(lambda x:float(x)/numEntries, labelCounter.values())
+    shannonEnt = reduce(lambda s,v:s-v*log(v,2), probList, 0)
     return shannonEnt
     
 def splitDataSet(dataSet, axis, value):
@@ -56,11 +52,7 @@ def chooseBestFeatureToSplit(dataSet):
     return bestFeature                      #returns an integer
 
 def majorityCnt(classList):
-    classCount={}
-    for vote in classList:
-        classCount[vote] = classCount.get(vote, 0) + 1
-    sortedClassCount = sorted(classCount.iteritems(), key=operator.itemgetter(1), reverse=True)
-    return sortedClassCount[0][0]
+    return Counter(classList).most_common(1)[0][0]
 
 def createTree(dataSet,labels):
     classList = [example[-1] for example in dataSet]

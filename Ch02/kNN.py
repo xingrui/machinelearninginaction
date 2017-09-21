@@ -13,6 +13,7 @@ Output:     the most popular class label
 '''
 from numpy import *
 import operator
+from collections import Counter
 from os import listdir
 
 def classify0(inX, dataSet, labels, k):
@@ -22,12 +23,8 @@ def classify0(inX, dataSet, labels, k):
     sqDistances = sqDiffMat.sum(axis=1)
     distances = sqDistances**0.5
     sortedDistIndicies = distances.argsort()     
-    classCount={}          
-    for i in range(k):
-        voteIlabel = labels[sortedDistIndicies[i]]
-        classCount[voteIlabel] = classCount.get(voteIlabel,0) + 1
-    sortedClassCount = sorted(classCount.iteritems(), key=operator.itemgetter(1), reverse=True)
-    return sortedClassCount[0][0]
+    voteIlabelList = map(lambda x:labels[x], sortedDistIndicies[:k])
+    return Counter(voteIlabelList).most_common(1)[0][0]
 
 def createDataSet():
     group = array([[1.0,1.1],[1.0,1.0],[0,0],[0,0.1]])
