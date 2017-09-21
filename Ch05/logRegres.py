@@ -96,20 +96,15 @@ def colicTest():
     trainingSet = []; trainingLabels = []
     for line in frTrain.readlines():
         currLine = line.strip().split('\t')
-        lineArr =[]
-        for i in range(21):
-            lineArr.append(float(currLine[i]))
-        trainingSet.append(lineArr)
-        trainingLabels.append(float(currLine[21]))
+        trainingSet.append(map(float, currLine[:-1])
+        trainingLabels.append(float(currLine[-1]))
     trainWeights = stocGradAscent1(array(trainingSet), trainingLabels, 1000)
     errorCount = 0; numTestVec = 0.0
     for line in frTest.readlines():
         numTestVec += 1.0
         currLine = line.strip().split('\t')
-        lineArr =[]
-        for i in range(21):
-            lineArr.append(float(currLine[i]))
-        if int(classifyVector(array(lineArr), trainWeights))!= int(currLine[21]):
+        lineArr = map(float, currLine[:-1])
+        if int(classifyVector(array(lineArr), trainWeights))!= int(currLine[-1]):
             errorCount += 1
     errorRate = (float(errorCount)/numTestVec)
     print "the error rate of this test is: %f" % errorRate
