@@ -63,11 +63,11 @@ def smoSimple(dataMatIn, classLabels, C, toler, maxIter, trace=False):
     while (iter < maxIter):
         alphaPairsChanged = 0
         for i in range(m):
-            fXi = float(multiply(alphas,labelMat).T*(dataMatrix*dataMatrix[i,:].T)) + b
+            fXi = vdot(multiply(alphas,labelMat), (dataMatrix*dataMatrix[i].T).A[:,0]) + b
             Ei = fXi - float(labelMat[i])#if checks if an example violates KKT conditions
             if ((labelMat[i]*Ei < -toler) and (alphas[i] < C)) or ((labelMat[i]*Ei > toler) and (alphas[i] > 0)):
                 j = selectJrand(i,m)
-                fXj = float(multiply(alphas,labelMat).T*(dataMatrix*dataMatrix[j,:].T)) + b
+                fXj = vdot(multiply(alphas,labelMat), (dataMatrix*dataMatrix[j].T).A[:,0]) + b
                 Ej = fXj - float(labelMat[j])
                 alphaIold = alphas[i]; alphaJold = alphas[j];
                 if (labelMat[i] != labelMat[j]):
@@ -77,15 +77,15 @@ def smoSimple(dataMatIn, classLabels, C, toler, maxIter, trace=False):
                     L = max(0, alphas[j] + alphas[i] - C)
                     H = min(C, alphas[j] + alphas[i])
                 if L==H: print "L==H"; continue
-                eta = 2.0 * dataMatrix[i,:]*dataMatrix[j,:].T - dataMatrix[i,:]*dataMatrix[i,:].T - dataMatrix[j,:]*dataMatrix[j,:].T
+                eta = 2.0 * vdot(dataMatrix.A[i], dataMatrix.A[j]) - vdot(dataMatrix.A[i], dataMatrix.A[i]) - vdot(dataMatrix.A[j], dataMatrix.A[j])
                 if eta >= 0: print "eta>=0"; continue
                 alphas[j] -= labelMat[j]*(Ei - Ej)/eta
                 alphas[j] = clipAlpha(alphas[j],H,L)
                 if (abs(alphas[j] - alphaJold) < 0.00001): print "j not moving enough"; continue
                 alphas[i] += labelMat[j]*labelMat[i]*(alphaJold - alphas[j])#update i by the same amount as j
                                                                         #the update is in the oppostie direction
-                b1 = b - Ei- labelMat[i]*(alphas[i]-alphaIold)*dataMatrix[i,:]*dataMatrix[i,:].T - labelMat[j]*(alphas[j]-alphaJold)*dataMatrix[i,:]*dataMatrix[j,:].T
-                b2 = b - Ej- labelMat[i]*(alphas[i]-alphaIold)*dataMatrix[i,:]*dataMatrix[j,:].T - labelMat[j]*(alphas[j]-alphaJold)*dataMatrix[j,:]*dataMatrix[j,:].T
+                b1 = b - Ei- labelMat[i]*(alphas[i]-alphaIold)*vdot(dataMatrix.A[i], dataMatrix.A[i]) - labelMat[j]*(alphas[j]-alphaJold)*vdot(dataMatrix.A[i], dataMatrix.A[j])
+                b2 = b - Ej- labelMat[i]*(alphas[i]-alphaIold)*vdot(dataMatrix.A[i], dataMatrix.A[j]) - labelMat[j]*(alphas[j]-alphaJold)*vdot(dataMatrix.A[j], dataMatrix.A[j])
                 if (0 < alphas[i]) and (C > alphas[i]): b = b1
                 elif (0 < alphas[j]) and (C > alphas[j]): b = b2
                 else: b = (b1 + b2)/2.0
