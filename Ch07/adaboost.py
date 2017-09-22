@@ -24,18 +24,18 @@ def loadDataSet(fileName):      #general function to parse tab -delimited floats
     return dataMat,labelMat
 
 def stumpClassify(dataMatrix,dimen,threshVal,threshIneq):#just classify the data
-    retArray = ones((shape(dataMatrix)[0],1))
+    retArray = ones(shape(dataMatrix)[0])
     if threshIneq == 'lt':
-        retArray[dataMatrix[:,dimen] <= threshVal] = -1.0
+        retArray[dataMatrix.A[:,dimen] <= threshVal] = -1.0
     else:
-        retArray[dataMatrix[:,dimen] > threshVal] = -1.0
+        retArray[dataMatrix.A[:,dimen] > threshVal] = -1.0
     return retArray
     
 
 def buildStump(dataArr,classLabels,D):
-    dataMatrix = mat(dataArr); labelMat = mat(classLabels).T
+    dataMatrix = mat(dataArr); labelArray = array(classLabels)
     m,n = shape(dataMatrix)
-    numSteps = 10.0; bestStump = {}; bestClasEst = mat(zeros((m,1)))
+    numSteps = 10.0; bestStump = {}; bestClasEst = zeros(m)
     minError = inf #init error sum, to +infinity
     for i in range(n):#loop over all dimensions
         rangeMin = dataMatrix[:,i].min(); rangeMax = dataMatrix[:,i].max();
@@ -44,9 +44,9 @@ def buildStump(dataArr,classLabels,D):
             for inequal in ['lt', 'gt']: #go over less than and greater than
                 threshVal = (rangeMin + float(j) * stepSize)
                 predictedVals = stumpClassify(dataMatrix,i,threshVal,inequal)#call stump classify with i, j, lessThan
-                errArr = mat(ones((m,1)))
-                errArr[predictedVals == labelMat] = 0
-                weightedError = sum(multiply(D,errArr))  #calc total error multiplied by D
+                errArr = ones(m)
+                errArr[predictedVals == labelArray] = 0
+                weightedError = vdot(D,errArr)  #calc total error multiplied by D
                 #print "split: dim %d, thresh %.2f, thresh ineqal: %s, the weighted error is %.3f" % (i, threshVal, inequal, weightedError)
                 if weightedError < minError:
                     minError = weightedError
@@ -60,22 +60,22 @@ def buildStump(dataArr,classLabels,D):
 def adaBoostTrainDS(dataArr,classLabels,numIt=40,retAgg=False):
     weakClassArr = []
     m = shape(dataArr)[0]
-    D = mat(ones((m,1))/m)   #init D to all equal
-    aggClassEst = mat(zeros((m,1)))
+    D = ones(m)/m   #init D to all equal
+    aggClassEst = zeros(m)
     for i in range(numIt):
         bestStump,error,classEst = buildStump(dataArr,classLabels,D)#build Stump
-        #print "D:",D.T
+        #print "D:",D
         alpha = float(0.5*log((1.0-error)/max(error,1e-16)))#calc alpha, throw in max(error,eps) to account for error=0
         bestStump['alpha'] = alpha  
         weakClassArr.append(bestStump)                  #store Stump Params in Array
-        #print "classEst: ",classEst.T
-        expon = multiply(-1*alpha*mat(classLabels).T,classEst) #exponent for D calc, getting messy
+        #print "classEst: ",classEst
+        expon = multiply(-1*alpha*array(classLabels),classEst) #exponent for D calc, getting messy
         D = multiply(D,exp(expon))                              #Calc New D for next iteration
         D = D/D.sum()
         #calc training error of all classifiers, if this is 0 quit for loop early (use break)
         aggClassEst += alpha*classEst
-        #print "aggClassEst: ",aggClassEst.T
-        aggErrors = multiply(sign(aggClassEst) != mat(classLabels).T,ones((m,1)))
+        #print "aggClassEst: ",aggClassEst
+        aggErrors = multiply(sign(aggClassEst) != array(classLabels),ones(m))
         errorRate = aggErrors.sum()/m
         print "total error: ",errorRate
         if errorRate == 0.0: break
@@ -85,7 +85,7 @@ def adaBoostTrainDS(dataArr,classLabels,numIt=40,retAgg=False):
 def adaClassify(datToClass,classifierArr):
     dataMatrix = mat(datToClass)#do stuff similar to last aggClassEst in adaBoostTrainDS
     m = shape(dataMatrix)[0]
-    aggClassEst = mat(zeros((m,1)))
+    aggClassEst = zeros(m)
     for classifier in classifierArr:
         classEst = stumpClassify(dataMatrix, classifier['dim'],\
                                  classifier['thresh'],\
@@ -105,7 +105,7 @@ def plotROC(predStrengths, classLabels):
     fig.clf()
     ax = plt.subplot(111)
     #loop through all the values, drawing a line segment at each point
-    for index in sortedIndicies.A[0]:
+    for index in sortedIndicies:
         if classLabels[index] == 1.0:
             delX = 0; delY = yStep;
         else:
