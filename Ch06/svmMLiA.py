@@ -246,8 +246,7 @@ def img2vector(filename):
     fr = open(filename)
     for i in range(32):
         lineStr = fr.readline()
-        for j in range(32):
-            returnVect[0,32*i+j] = int(lineStr[j])
+        returnVect[0,32*i:32*i+32] = map(int, lineStr[:32])
     return returnVect
 
 def loadImages(dirName):

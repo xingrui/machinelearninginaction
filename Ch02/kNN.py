@@ -23,7 +23,7 @@ def classify0(inX, dataSet, labels, k):
     sqDistances = sqDiffMat.sum(axis=1)
     distances = sqDistances**0.5
     sortedDistIndicies = distances.argsort()     
-    voteIlabelList = map(lambda x:labels[x], sortedDistIndicies[:k])
+    voteIlabelList = [labels[x] for x in sortedDistIndicies[:k]]
     return Counter(voteIlabelList).most_common(1)[0][0]
 
 def createDataSet():
@@ -92,8 +92,7 @@ def img2vector(filename):
     fr = open(filename)
     for i in range(32):
         lineStr = fr.readline()
-        for j in range(32):
-            returnVect[0,32*i+j] = int(lineStr[j])
+        returnVect[0,32*i:32*i+32] = map(int, lineStr[:32])
     return returnVect
 
 def handwritingClassTest():
