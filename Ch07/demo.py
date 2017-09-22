@@ -8,7 +8,7 @@ def testLoadDataSet(filename):
     assert mat(labelMat).shape == (1, 67)
 
 def testBuildStump():
-    D = mat(ones((5,1))/5)
+    D = ones(5)/5
     datMat, classLabels = adaboost.loadSimpData()
     print adaboost.buildStump(datMat, classLabels, D)
 
