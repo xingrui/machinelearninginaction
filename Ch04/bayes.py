@@ -15,6 +15,12 @@ def loadDataSet():
                  ['quit', 'buying', 'worthless', 'dog', 'food', 'stupid']]
     classVec = [0,1,0,1,0,1]    #1 is abusive, 0 not
     return postingList,classVec
+
+def changeListToMap(vocabList):
+    vocabMap = {}
+    for i in len(vocabList):
+        vocabMap[vocabList[i]] = i
+    return vocabMap
                  
 def createVocabList(dataSet):
     vocabSet = set()  #create empty set
@@ -48,8 +54,8 @@ def trainNB0(trainMatrix,trainCategory):
     return p0Vect,p1Vect,pAbusive
 
 def classifyNB(vec2Classify, p0Vec, p1Vec, pClass1):
-    p1 = sum(vec2Classify * p1Vec) + log(pClass1)    #element-wise mult
-    p0 = sum(vec2Classify * p0Vec) + log(1.0 - pClass1)
+    p1 = vdot(vec2Classify, p1Vec) + log(pClass1)    #element-wise mult
+    p0 = vdot(vec2Classify, p0Vec) + log(1.0 - pClass1)
     if p1 > p0:
         return 1
     else: 
