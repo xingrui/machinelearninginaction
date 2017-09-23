@@ -119,7 +119,7 @@ class optStruct:
         
 def calcEk(oS, k):
     fXk = vdot(multiply(oS.alphas,oS.labelArray), oS.K[:,k]) + oS.b
-    Ek = fXk - oS.labelArray[k]
+    Ek = fXk - float(oS.labelArray[k])
     return Ek
         
 def selectJ(i, oS, Ei):         #this is the second choice -heurstic, and calcs Ej
@@ -229,12 +229,12 @@ def testRbf(k1=1.3):
     print "the test error rate is: %f" % (float(errorCount)/m)    
     
 def img2vector(filename):
-    returnVect = zeros((1,1024))
+    returnVect = zeros((32,32))
     fr = open(filename)
     for i in range(32):
         lineStr = fr.readline()
-        returnVect[0,32*i:32*i+32] = map(int, lineStr[:32])
-    return returnVect
+        returnVect[i] = map(int, lineStr.strip())
+    return returnVect.reshape(1,-1)
 
 def loadImages(dirName):
     from os import listdir

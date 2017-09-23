@@ -95,7 +95,7 @@ def printMat(inMat, thresh=0.8):
 def imgCompress(numSV=3, thresh=0.8):
     myl = []
     for line in open('0_5.txt').readlines():
-        myl.append(map(int,line[:32]))
+        myl.append(map(int,line.strip()))
     myMat = mat(myl)
     print "****original matrix******"
     printMat(myMat, thresh)

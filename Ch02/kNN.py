@@ -53,10 +53,7 @@ def autoNorm(dataSet):
     minVals = dataSet.min(0)
     maxVals = dataSet.max(0)
     ranges = maxVals - minVals
-    normDataSet = zeros(shape(dataSet))
-    m = dataSet.shape[0]
-    normDataSet = dataSet - tile(minVals, (m,1))
-    normDataSet = normDataSet/tile(ranges, (m,1))   #element wise divide
+    normDataSet = (dataSet - minVals) / ranges # skip tile operation.
     return normDataSet, ranges, minVals
    
 def datingClassTest():
@@ -87,12 +84,12 @@ def classifyPerson():
     print "You will probably like this person: %s" % resultList[classifierResult - 1]
     
 def img2vector(filename):
-    returnVect = zeros((1,1024))
+    returnVect = zeros((32,32))
     fr = open(filename)
     for i in range(32):
         lineStr = fr.readline()
-        returnVect[0,32*i:32*i+32] = map(int, lineStr[:32])
-    return returnVect
+        returnVect[i] = map(int, lineStr.strip())
+    return returnVect.reshape(1,-1)
 
 def handwritingClassTest():
     hwLabels = []
