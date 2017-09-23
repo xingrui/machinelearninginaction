@@ -1,0 +1,2 @@
+import svdRec
+svdRec.imgCompress()

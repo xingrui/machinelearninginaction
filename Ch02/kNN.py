@@ -40,7 +40,7 @@ def file2matrix(filename):
     index = 0
     for line in arrayOLines:
         listFromLine = line.strip().split('\t')
-        returnMat[index,:] = listFromLine[0:3]
+        returnMat[index] = listFromLine[0:3]
         if(listFromLine[-1].isdigit()):
             classLabelVector.append(int(listFromLine[-1]))
         else:
@@ -64,7 +64,7 @@ def datingClassTest():
     numTestVecs = int(m*hoRatio)
     errorCount = 0.0
     for i in range(numTestVecs):
-        classifierResult = classify0(normMat[i,:],normMat[numTestVecs:m,:],datingLabels[numTestVecs:m],3)
+        classifierResult = classify0(normMat[i],normMat[numTestVecs:m],datingLabels[numTestVecs:m],3)
         print "the classifier came back with: %d, the real answer is: %d" % (classifierResult, datingLabels[i])
         if (classifierResult != datingLabels[i]): errorCount += 1.0
     print "the total error rate is: %f" % (errorCount/float(numTestVecs))
@@ -101,7 +101,7 @@ def handwritingClassTest():
         fileStr = fileNameStr.split('.')[0]     #take off .txt
         classNumStr = int(fileStr.split('_')[0])
         hwLabels.append(classNumStr)
-        trainingMat[i,:] = img2vector('trainingDigits/%s' % fileNameStr)
+        trainingMat[i] = img2vector('trainingDigits/%s' % fileNameStr)
     testFileList = listdir('testDigits')        #iterate through the test set
     errorCount = 0.0
     mTest = len(testFileList)

@@ -45,7 +45,7 @@ class MRsvm(MRJob):
         labels = self.data[:,-1]; X=self.data[:,0:-1]#reshape data into X and Y
         if self.w == 0: self.w = [0.001]*shape(X)[1] #init w on first iteration
         for index in self.dataList:
-            p = mat(self.w)*X[index,:].T #calc p=w*dataSet[key].T 
+            p = mat(self.w)*X[index].T #calc p=w*dataSet[key].T 
             if labels[index]*p < 1.0:
                 yield (1, ['u', index])#make sure everything has the same key                           
         yield (1, ['w', self.w])       #so it ends up at the same reducer
@@ -59,7 +59,7 @@ class MRsvm(MRJob):
         labels = self.data[:,-1]; X=self.data[:,0:-1]
         wMat = mat(self.w);   wDelta = mat(zeros(len(self.w)))
         for index in self.dataList:
-            wDelta += float(labels[index])*X[index,:] #wDelta += label*dataSet
+            wDelta += float(labels[index])*X[index] #wDelta += label*dataSet
         eta = 1.0/(2.0*self.t)       #calc new: eta
         #calc new: w = (1.0 - 1/t)*w + (eta/k)*wDelta
         wMat = (1.0 - 1.0/self.t)*wMat + (eta/self.k)*wDelta

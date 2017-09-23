@@ -28,7 +28,7 @@ def lwlr(testPoint,xArr,yArr,k=1.0):
     m = shape(xMat)[0]
     weights = mat(eye((m)))
     for j in range(m):                      #next 2 lines create weights matrix
-        diffMat = testPoint - xMat[j,:]     #
+        diffMat = testPoint - xMat[j]     #
         weights[j,j] = exp(diffMat*diffMat.T/(-2.0*k**2))
     xTx = xMat.T * (weights * xMat)
     if linalg.det(xTx) == 0.0:
@@ -76,7 +76,7 @@ def ridgeTest(xArr,yArr):
     wMat = zeros((numTestPts,shape(xMat)[1]))
     for i in range(numTestPts):
         ws = ridgeRegres(xMat,yMat,exp(i-10))
-        wMat[i,:]=ws.T
+        wMat[i]=ws.T
     return wMat
 
 def regularize(xMat):#regularize by columns
@@ -107,7 +107,7 @@ def stageWise(xArr,yArr,eps=0.01,numIt=100):
                     lowestError = rssE
                     wsMax = wsTest
         ws = wsMax.copy()
-        #returnMat[i,:]=ws.T
+        #returnMat[i]=ws.T
     #return returnMat
 
 #def scrapePage(inFile,outFile,yr,numPce,origPrc):
@@ -191,7 +191,7 @@ def crossValidation(xArr,yArr,numVal=10):
             meanTrain = mean(matTrainX,0)
             varTrain = var(matTrainX,0)
             matTestX = (matTestX-meanTrain)/varTrain #regularize test with training params
-            yEst = matTestX * mat(wMat[k,:]).T + mean(trainY)#test ridge results and store
+            yEst = matTestX * mat(wMat[k]).T + mean(trainY)#test ridge results and store
             errorMat[i,k]=rssError(yEst.T.A,array(testY))
             #print errorMat[i,k]
     meanErrors = mean(errorMat,0)#calc avg performance of the different ridge weight vectors

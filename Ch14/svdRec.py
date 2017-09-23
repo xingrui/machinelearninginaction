@@ -67,8 +67,8 @@ def svdEst(dataMat, user, simMeas, item):
     for j in range(n):
         userRating = dataMat[user,j]
         if userRating == 0 or j==item: continue
-        similarity = simMeas(xformedItems[item,:].T,\
-                             xformedItems[j,:].T)
+        similarity = simMeas(xformedItems[item].T,\
+                             xformedItems[j].T)
         print 'the %d and %d similarity is: %f' % (item, j, similarity)
         simTotal += similarity
         ratSimTotal += similarity * userRating
@@ -76,7 +76,7 @@ def svdEst(dataMat, user, simMeas, item):
     else: return ratSimTotal/simTotal
 
 def recommend(dataMat, user, N=3, simMeas=cosSim, estMethod=standEst):
-    unratedItems = nonzero(dataMat.A[user,:]==0)[0]#find unrated items 
+    unratedItems = nonzero(dataMat.A[user]==0)[0]#find unrated items 
     if len(unratedItems) == 0: return 'you rated everything'
     itemScores = []
     for item in unratedItems:
@@ -101,6 +101,6 @@ def imgCompress(numSV=3, thresh=0.8):
     printMat(myMat, thresh)
     U,Sigma,VT = la.svd(myMat)
     SigRecon = diag(Sigma[:numSV])
-    reconMat = U[:,:numSV]*SigRecon*VT[:numSV,:]
+    reconMat = U[:,:numSV]*SigRecon*VT[:numSV]
     print "****reconstructed matrix using %d singular values******" % numSV
     printMat(reconMat, thresh)

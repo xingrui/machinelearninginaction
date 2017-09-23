@@ -15,8 +15,8 @@ def loadDataSet(fileName):      #general function to parse tab -delimited floats
     return dataMat
 
 def binSplitDataSet(dataSet, feature, value):
-    mat0 = dataSet[nonzero(dataSet.A[:,feature] > value)[0],:]
-    mat1 = dataSet[nonzero(dataSet.A[:,feature] <= value)[0],:]
+    mat0 = dataSet[nonzero(dataSet.A[:,feature] > value)[0]]
+    mat1 = dataSet[nonzero(dataSet.A[:,feature] <= value)[0]]
     return mat0,mat1
 
 def regLeaf(dataSet):#returns the value used for each leaf

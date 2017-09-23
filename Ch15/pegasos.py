@@ -21,9 +21,9 @@ def seqPegasos(dataSet, labels, lam, T):
     for t in range(1, T+1):
         i = random.randint(m)
         eta = 1.0/(lam*t)
-        p = predict(w, dataSet[i,:])
+        p = predict(w, dataSet[i])
         if labels[i]*p < 1:
-            w = (1.0 - 1/t)*w + eta*labels[i]*dataSet[i,:]
+            w = (1.0 - 1/t)*w + eta*labels[i]*dataSet[i]
         else:
             w = (1.0 - 1/t)*w
         print w
@@ -41,9 +41,9 @@ def batchPegasos(dataSet, labels, lam, T, k):
         random.shuffle(dataIndex)
         for j in range(k):#go over training set 
             i = dataIndex[j]
-            p = predict(w, dataSet[i,:])        #mapper code
+            p = predict(w, dataSet[i])        #mapper code
             if labels[i]*p < 1:                 #mapper code
-                wDelta += labels[i]*dataSet[i,:].A #accumulate changes  
+                wDelta += labels[i]*dataSet[i].A #accumulate changes  
         w = (1.0 - 1/t)*w + (eta/k)*wDelta       #apply changes at each T
     return w
 

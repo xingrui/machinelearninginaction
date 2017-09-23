@@ -214,7 +214,7 @@ def testRbf(k1=1.3):
     m,n = shape(dataArray)
     errorCount = 0
     for i in range(m):
-        kernelEval = kernelTrans(sVs,dataArray[i,:],('rbf', k1))
+        kernelEval = kernelTrans(sVs,dataArray[i],('rbf', k1))
         predict=vdot(kernelEval, multiply(labelSV,alphas[svInd])) + b
         if sign(predict)!=sign(labelArr[i]): errorCount += 1
     print "the training error rate is: %f" % (float(errorCount)/m)
@@ -223,7 +223,7 @@ def testRbf(k1=1.3):
     dataArray=array(dataArr);
     m,n = shape(dataArray)
     for i in range(m):
-        kernelEval = kernelTrans(sVs,dataArray[i,:],('rbf', k1))
+        kernelEval = kernelTrans(sVs,dataArray[i],('rbf', k1))
         predict=vdot(kernelEval, multiply(labelSV,alphas[svInd])) + b
         if sign(predict)!=sign(labelArr[i]): errorCount += 1    
     print "the test error rate is: %f" % (float(errorCount)/m)    
@@ -248,7 +248,7 @@ def loadImages(dirName):
         classNumStr = int(fileStr.split('_')[0])
         if classNumStr == 9: hwLabels.append(-1)
         else: hwLabels.append(1)
-        trainingMat[i,:] = img2vector('%s/%s' % (dirName, fileNameStr))
+        trainingMat[i] = img2vector('%s/%s' % (dirName, fileNameStr))
     return trainingMat, hwLabels    
 
 def testDigits(kTup=('rbf', 10)):
@@ -262,7 +262,7 @@ def testDigits(kTup=('rbf', 10)):
     m,n = shape(dataArray)
     errorCount = 0
     for i in range(m):
-        kernelEval = kernelTrans(sVs,dataArray[i,:],kTup)
+        kernelEval = kernelTrans(sVs,dataArray[i],kTup)
         predict=vdot(kernelEval, multiply(labelSV,alphas[svInd])) + b
         if sign(predict)!=sign(labelArr[i]): errorCount += 1
     print "the training error rate is: %f" % (float(errorCount)/m)
@@ -271,7 +271,7 @@ def testDigits(kTup=('rbf', 10)):
     dataArray=array(dataArr);
     m,n = shape(dataArray)
     for i in range(m):
-        kernelEval = kernelTrans(sVs,dataArray[i,:],kTup)
+        kernelEval = kernelTrans(sVs,dataArray[i],kTup)
         predict=vdot(kernelEval, multiply(labelSV,alphas[svInd])) + b
         if sign(predict)!=sign(labelArr[i]): errorCount += 1    
     print "the test error rate is: %f" % (float(errorCount)/m) 

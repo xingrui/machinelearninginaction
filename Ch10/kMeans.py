@@ -37,15 +37,15 @@ def kMeans(dataSet, k, distMeas=distEclud, createCent=randCent):
         for i in range(m):#for each data point assign it to the closest centroid
             minDist = inf; minIndex = -1
             for j in range(k):
-                distJI = distMeas(centroids[j,:],dataSet[i,:])
+                distJI = distMeas(centroids[j],dataSet[i])
                 if distJI < minDist:
                     minDist = distJI; minIndex = j
             if clusterAssment[i,0] != minIndex: clusterChanged = True
-            clusterAssment[i,:] = minIndex,minDist**2
+            clusterAssment[i] = minIndex,minDist**2
         print centroids
         for cent in range(k):#recalculate centroids
             ptsInClust = dataSet[nonzero(clusterAssment.A[:,0]==cent)[0]]#get all the point in this cluster
-            centroids[cent,:] = mean(ptsInClust, axis=0) #assign centroid to mean 
+            centroids[cent] = mean(ptsInClust, axis=0) #assign centroid to mean 
     return centroids, clusterAssment
 
 def biKmeans(dataSet, k, distMeas=distEclud):
@@ -54,11 +54,11 @@ def biKmeans(dataSet, k, distMeas=distEclud):
     centroid0 = mean(dataSet.A, axis=0).tolist()
     centList =[centroid0] #create a list with one centroid
     for j in range(m):#calc initial Error
-        clusterAssment[j,1] = distMeas(mat(centroid0), dataSet[j,:])**2
+        clusterAssment[j,1] = distMeas(mat(centroid0), dataSet[j])**2
     while (len(centList) < k):
         lowestSSE = inf
         for i in range(len(centList)):
-            ptsInCurrCluster = dataSet[nonzero(clusterAssment.A[:,0]==i)[0],:]#get the data points currently in cluster i
+            ptsInCurrCluster = dataSet[nonzero(clusterAssment.A[:,0]==i)[0]]#get the data points currently in cluster i
             centroidMat, splitClustAss = kMeans(ptsInCurrCluster, 2, distMeas)
             sseSplit = sum(splitClustAss[:,1])#compare the SSE to the currrent minimum
             sseNotSplit = sum(clusterAssment[nonzero(clusterAssment.A[:,0]!=i)[0],1])
@@ -72,9 +72,9 @@ def biKmeans(dataSet, k, distMeas=distEclud):
         bestClustAss[nonzero(bestClustAss.A[:,0] == 0)[0],0] = bestCentToSplit
         print 'the bestCentToSplit is: ',bestCentToSplit
         print 'the len of bestClustAss is: ', len(bestClustAss)
-        centList[bestCentToSplit] = bestNewCents.A[0,:].tolist()#replace a centroid with two best centroids 
-        centList.append(bestNewCents.A[1,:].tolist())
-        clusterAssment[nonzero(clusterAssment.A[:,0] == bestCentToSplit)[0],:]= bestClustAss#reassign new clusters, and SSE
+        centList[bestCentToSplit] = bestNewCents.A[0].tolist()#replace a centroid with two best centroids 
+        centList.append(bestNewCents.A[1].tolist())
+        clusterAssment[nonzero(clusterAssment.A[:,0] == bestCentToSplit)[0]]= bestClustAss#reassign new clusters, and SSE
     return mat(centList), clusterAssment
 
 def geoGrab(stAddress, city):
@@ -132,7 +132,7 @@ def clusterClubs(numClust=5):
     ax0.imshow(imgP)
     ax1=fig.add_axes(rect, label='ax1', frameon=False)
     for i in range(numClust):
-        ptsInCurrCluster = datMat[nonzero(clustAssing[:,0].A==i)[0],:]
+        ptsInCurrCluster = datMat[nonzero(clustAssing[:,0].A==i)[0]]
         markerStyle = scatterMarkers[i % len(scatterMarkers)]
         ax1.scatter(ptsInCurrCluster.A[:,0], ptsInCurrCluster.A[:,1], marker=markerStyle, s=90)
     ax1.scatter(myCentroids.A[:,0], myCentroids.A[:,1], marker='+', s=300)

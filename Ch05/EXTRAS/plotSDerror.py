@@ -19,7 +19,7 @@ def stocGradAscent0(dataMatrix, classLabels):
             h = logRegres.sigmoid(sum(dataMatrix[i]*weights))
             error = classLabels[i] - h
             weights = weights + alpha * error * dataMatrix[i]
-            weightsHistory[j*m + i,:] = weights
+            weightsHistory[j*m + i] = weights
     return weightsHistory
 
 def stocGradAscent1(dataMatrix, classLabels):
@@ -36,7 +36,7 @@ def stocGradAscent1(dataMatrix, classLabels):
             error = classLabels[randIndex] - h
             #print error
             weights = weights + alpha * error * dataMatrix[randIndex]
-            weightsHistory[j*m + i,:] = weights
+            weightsHistory[j*m + i] = weights
             del(dataIndex[randIndex])
     print weights
     return weightsHistory
