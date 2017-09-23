@@ -5,8 +5,10 @@ def tests():
     dataSet, labels = trees.createDataSet()
     print dataSet
     print trees.calcShannonEnt(dataSet)
-    t = trees.createTree(dataSet, labels)
-    print t
+    myTree = trees.createTree(dataSet, labels)
+    print myTree, labels
+    print trees.classify(myTree, labels, [1,0])
+    print trees.classify(myTree, labels, [1,1])
 
 def copyTest():
     # list test.

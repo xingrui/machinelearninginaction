@@ -54,22 +54,22 @@ def chooseBestFeatureToSplit(dataSet):
 def majorityCnt(classList):
     return Counter(classList).most_common(1)[0][0]
 
-def createTree(dataSet,labels):
+def createTree(dataSet,orgLabels):
     classList = [example[-1] for example in dataSet]
     if classList.count(classList[0]) == len(classList): 
         return classList[0]#stop splitting when all of the classes are equal
     if len(dataSet[0]) == 1: #stop splitting when there are no more features in dataSet
         return majorityCnt(classList)
     bestFeat = chooseBestFeatureToSplit(dataSet)
+    labels = orgLabels[:] #copy all of labels, so trees don't mess up existing labels
     bestFeatLabel = labels[bestFeat]
     myTree = {bestFeatLabel:{}}
     del(labels[bestFeat])
     featValues = [example[bestFeat] for example in dataSet]
     uniqueVals = set(featValues)
     for value in uniqueVals:
-        subLabels = labels[:]       #copy all of labels, so trees don't mess up existing labels
         subDataSet = splitDataSet(dataSet, bestFeat, value)
-        myTree[bestFeatLabel][value] = createTree(subDataSet, subLabels)
+        myTree[bestFeatLabel][value] = createTree(subDataSet, labels)
     return myTree                            
     
 def classify(inputTree,featLabels,testVec):
