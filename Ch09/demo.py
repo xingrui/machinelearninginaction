@@ -2,34 +2,34 @@ from numpy import *
 import regTrees
 
 def testSplitData():
-    treeMat = eye(4) * 5
-    treeMat = mat(eye(4) * 5)
-    mat0, mat1 = regTrees.binSplitDataSet(treeMat, 0, 0.5)
-    print mat0
-    print mat1
+    treeArray = eye(4) * 5
+    treeArray = array(eye(4) * 5)
+    array0, array1 = regTrees.binSplitDataSet(treeArray, 0, 0.5)
+    print array0 
+    print array1
 
 def regressionTreeInner(filename, subplot, fig):
     import matplotlib
     import matplotlib.pyplot as plt
-    myMat = mat(regTrees.loadDataSet(filename))
+    myArray = array(regTrees.loadDataSet(filename))
     ax = fig.add_subplot(subplot)
-    ax.scatter(myMat.A[:,0], myMat.A[:,1],c='red')
-    tree = regTrees.createTree(myMat)
-    testDat = arange(min(myMat[:,0]),max(myMat[:,0]),0.01)
-    yHat = regTrees.createForeCast(tree, testDat)
+    ax.scatter(myArray[:,0], myArray[:,1],c='red')
+    tree = regTrees.createTree(myArray)
+    testDat = arange(min(myArray[:,0]),max(myArray[:,0]),0.01)
+    yHat = regTrees.createForeCast(tree, array(testDat).reshape(-1,1))
     ax.plot(testDat, yHat, linewidth = 2.0)
     print tree
 
 def testModelInner(filename, subplot, fig):
     import matplotlib
     import matplotlib.pyplot as plt
-    myMat2 = mat(regTrees.loadDataSet(filename))
+    myArray2 = array(regTrees.loadDataSet(filename))
     ax = fig.add_subplot(subplot)
-    ax.scatter(myMat2.A[:,0], myMat2.A[:,1], c='red')
-    myTree = regTrees.createTree(myMat2, regTrees.modelLeaf, regTrees.modelErr, (1,10))
+    ax.scatter(myArray2[:,0], myArray2[:,1], c='red')
+    myTree = regTrees.createTree(myArray2, regTrees.modelLeaf, regTrees.modelErr, (1,10))
     print myTree
-    testDat = arange(min(myMat2[:,0]),max(myMat2[:,0]),0.01)
-    yHat = regTrees.createForeCast(myTree, testDat, regTrees.modelTreeEval)
+    testDat = arange(min(myArray2[:,0]),max(myArray2[:,0]),0.01)
+    yHat = regTrees.createForeCast(myTree, array(testDat).reshape(-1,1), regTrees.modelTreeEval)
     ax.plot(testDat, yHat, linewidth = 2.0)
 
 def testFrame(InnerFunction):
@@ -50,35 +50,40 @@ def testModel():
 
 def testPrune():
     myDat2 = regTrees.loadDataSet('ex2.txt')
-    myMat2 = mat(myDat2)
-    myTree = regTrees.createTree(myMat2, ops=(0,1))
+    myArray2 = array(myDat2)
+    myTree = regTrees.createTree(myArray2, ops=(0,1))
     myDat2Test = regTrees.loadDataSet('ex2test.txt')
-    myMat2Test = mat(myDat2Test)
-    print regTrees.prune(myTree, myMat2Test)
+    myArray2Test = array(myDat2Test)
+    print regTrees.prune(myTree, myArray2Test)
 
 def testCompare():
     import matplotlib
     import matplotlib.pyplot as plt
     fig = plt.figure()
-    trainMat = mat(regTrees.loadDataSet('bikeSpeedVsIq_train.txt'))
+    trainArray = array(regTrees.loadDataSet('bikeSpeedVsIq_train.txt'))
     testDat = regTrees.loadDataSet('bikeSpeedVsIq_test.txt')
     testDat.sort()
-    testMat = mat(testDat)
-    print testMat.shape
-    myTree = regTrees.createTree(trainMat, ops=(1,20))
-    yHat = regTrees.createForeCast(myTree, testMat[:,0])
+    testArray = array(testDat)
+    myTree = regTrees.createTree(trainArray, ops=(1,20))
+    yHat = regTrees.createForeCast(myTree, testArray[:,0].reshape(-1,1))
     ax = fig.add_subplot(111)
-    ax.scatter(trainMat.A[:,0], trainMat.A[:,1], c='red')
-    ax.plot(testMat[:,0], yHat, linewidth = 2.0)
-    print corrcoef(yHat, testMat[:,1], rowvar=0)[0,1]
-    myTree = regTrees.createTree(trainMat, regTrees.modelLeaf, regTrees.modelErr, (1,20))
-    yHat = regTrees.createForeCast(myTree, testMat[:,0],regTrees.modelTreeEval)
-    print corrcoef(yHat, testMat[:,1], rowvar=0)[0,1]
-    ax.plot(testMat[:,0], yHat, linewidth = 2.0)
+    ax.scatter(trainArray[:,0], trainArray[:,1], c='red')
+    ax.plot(testArray[:,0], yHat, linewidth = 2.0)
+    print corrcoef(yHat, testArray[:,1], rowvar=0)[0,1]
+    myTree = regTrees.createTree(trainArray, regTrees.modelLeaf, regTrees.modelErr, (1,20))
+    yHat = regTrees.createForeCast(myTree, testArray[:,0].reshape(-1,1),regTrees.modelTreeEval)
+    print corrcoef(yHat, testArray[:,1], rowvar=0)[0,1]
+    ax.plot(testArray[:,0], yHat, linewidth = 2.0)
     plt.show()
 
 if __name__ == "__main__":
+    testSplitData()
+    print 'testSplitData passed'
     testRegression()
+    print 'testRegression passed'
     testModel()
+    print 'testModel passed'
     testPrune()
+    print 'testPrune passed'
     testCompare()
+    print 'testCompare passed'

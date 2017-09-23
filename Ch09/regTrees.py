@@ -14,71 +14,73 @@ def loadDataSet(fileName):      #general function to parse tab -delimited floats
         dataMat.append(fltLine)
     return dataMat
 
-def binSplitDataSet(dataSet, feature, value):
-    mat0 = dataSet[nonzero(dataSet.A[:,feature] > value)[0]]
-    mat1 = dataSet[nonzero(dataSet.A[:,feature] <= value)[0]]
-    return mat0,mat1
+def binSplitDataSet(dataArray, feature, value):
+    array0 = dataArray[nonzero(dataArray[:,feature] > value)[0]]
+    array1 = dataArray[nonzero(dataArray[:,feature] <= value)[0]]
+    return array0,array1
 
-def regLeaf(dataSet):#returns the value used for each leaf
-    return mean(dataSet[:,-1])
+def regLeaf(dataArray):#returns the value used for each leaf
+    return mean(dataArray[:,-1])
 
-def regErr(dataSet):
-    return var(dataSet[:,-1]) * shape(dataSet)[0]
+def regErr(dataArray):
+    return var(dataArray[:,-1]) * shape(dataArray)[0]
 
-def linearSolve(dataSet):   #helper function used in two places
-    m,n = shape(dataSet)
-    X = mat(ones((m,n))); Y = mat(ones((m,1)))#create a copy of data with 1 in 0th postion
-    X[:,1:n] = dataSet[:,0:n-1]; Y = dataSet[:,-1]#and strip out Y
-    xTx = X.T*X
+def linearSolve(dataArray):   #helper function used in two places
+    m,n = shape(dataArray)
+    X = ones((m,n)); 
+    X[:,1:n] = dataArray[:,0:n-1]; Y = dataArray[:,-1]#and strip out Y
+    xTx = dot(X.T, X)
     if linalg.det(xTx) == 0.0:
         raise NameError('This matrix is singular, cannot do inverse,\n\
         try increasing the second value of ops')
-    ws = xTx.I * (X.T * Y)
+    ws = dot(linalg.inv(xTx), dot(X.T, Y))
     return ws,X,Y
 
-def modelLeaf(dataSet):#create linear model and return coeficients
-    ws,X,Y = linearSolve(dataSet)
+def modelLeaf(dataArray):#create linear model and return coeficients
+    ws,X,Y = linearSolve(dataArray)
     return ws
 
-def modelErr(dataSet):
-    ws,X,Y = linearSolve(dataSet)
-    yHat = X * ws
+def modelErr(dataArray):
+    ws,X,Y = linearSolve(dataArray)
+    yHat = dot(X, ws)
     return sum(power(Y - yHat,2))
 
-def chooseBestSplit(dataSet, leafType=regLeaf, errType=regErr, ops=(1,4)):
+def chooseBestSplit(dataArray, leafType=regLeaf, errType=regErr, ops=(1,4)):
     tolS = ops[0]; tolN = ops[1]
     #if all the target variables are the same value: quit and return value
-    if len(set(dataSet.A[:,-1])) == 1: #exit cond 1
-        return None, leafType(dataSet)
-    m,n = shape(dataSet)
+    if len(set(dataArray[:,-1])) == 1: #exit cond 1
+        return None, leafType(dataArray)
+    m,n = shape(dataArray)
     #the choice of the best feature is driven by Reduction in RSS error from mean
-    S = errType(dataSet)
+    S = errType(dataArray)
     bestS = inf; bestIndex = 0; bestValue = 0
     for featIndex in range(n-1):
-        for splitVal in set(dataSet.A[:,featIndex]):
-            mat0, mat1 = binSplitDataSet(dataSet, featIndex, splitVal)
-            if (shape(mat0)[0] < tolN) or (shape(mat1)[0] < tolN): continue
-            newS = errType(mat0) + errType(mat1)
+        for splitVal in set(dataArray[:,featIndex]):
+            array0, array1 = binSplitDataSet(dataArray, featIndex, splitVal)
+            if (shape(array0)[0] < tolN) or (shape(array1)[0] < tolN): continue
+            newS = errType(array0) + errType(array1)
             if newS < bestS: 
                 bestIndex = featIndex
                 bestValue = splitVal
                 bestS = newS
     #if the decrease (S-bestS) is less than a threshold don't do the split
     if (S - bestS) < tolS: 
-        return None, leafType(dataSet) #exit cond 2
-    mat0, mat1 = binSplitDataSet(dataSet, bestIndex, bestValue)
-    if (shape(mat0)[0] < tolN) or (shape(mat1)[0] < tolN):  #exit cond 3
-        return None, leafType(dataSet)
+        return None, leafType(dataArray) #exit cond 2
+    array0, array1 = binSplitDataSet(dataArray, bestIndex, bestValue)
+    if (shape(array0)[0] < tolN) or (shape(array1)[0] < tolN):  #exit cond 3
+        return None, leafType(dataArray)
     return bestIndex,bestValue#returns the best feature to split on
                               #and the value used for that split
 
-def createTree(dataSet, leafType=regLeaf, errType=regErr, ops=(1,4)):#assume dataSet is NumPy Mat so we can array filtering
-    feat, val = chooseBestSplit(dataSet, leafType, errType, ops)#choose the best split
+def createTree(dataSet, leafType=regLeaf, errType=regErr, ops=(1,4)):#assume dataArray is NumPy Mat so we can array filtering
+    dataArray = array(dataSet)
+    feat, val = chooseBestSplit(dataArray, leafType, errType, ops)#choose the best split
+
     if feat == None: return val #if the splitting hit a stop condition return val
     retTree = {}
     retTree['spInd'] = feat
     retTree['spVal'] = val
-    lSet, rSet = binSplitDataSet(dataSet, feat, val)
+    lSet, rSet = binSplitDataSet(dataArray, feat, val)
     retTree['left'] = createTree(lSet, leafType, errType, ops)
     retTree['right'] = createTree(rSet, leafType, errType, ops)
     return retTree  
@@ -111,13 +113,13 @@ def prune(tree, testData):
     else: return tree
     
 def regTreeEval(model, inDat):
-    return float(model)
+    return model
 
 def modelTreeEval(model, inDat):
-    n = shape(inDat)[1]
-    X = mat(ones((1,n+1)))
-    X[:,1:n+1]=inDat
-    return float(X*model)
+    n = shape(inDat)[0]
+    X = ones(n+1)
+    X[1:n+1]=inDat
+    return vdot(X,model)
 
 def treeForeCast(tree, inData, modelEval=regTreeEval):
     if not isTree(tree): return modelEval(tree, inData)
@@ -129,8 +131,8 @@ def treeForeCast(tree, inData, modelEval=regTreeEval):
         else: return modelEval(tree['right'], inData)
         
 def createForeCast(tree, testData, modelEval=regTreeEval):
-    m=len(testData)
-    yHat = mat(zeros((m,1)))
+    m = testData.shape[0]
+    yHat = zeros(m)
     for i in range(m):
-        yHat[i,0] = treeForeCast(tree, mat(testData[i]), modelEval)
+        yHat[i] = treeForeCast(tree, testData[i], modelEval)
     return yHat
