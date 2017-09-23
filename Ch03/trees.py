@@ -18,9 +18,9 @@ def createDataSet():
     return dataSet, labels
 
 def calcShannonEnt(dataSet):
-    numEntries = len(dataSet)
+    numEntries = float(len(dataSet))
     labelCounter = Counter([x[-1] for x in dataSet])
-    probList = [float(x)/numEntries for x in labelCounter.values()]
+    probList = [x/numEntries for x in labelCounter.values()]
     shannonEnt = reduce(lambda s,v:s-v*log(v,2), probList, 0)
     return shannonEnt
     
