@@ -208,11 +208,7 @@ def smoP(dataMatIn, classLabels, C, toler, maxIter,kTup=('lin', 0), trace=False)
 
 def calcWs(alphas,dataArr,classLabels):
     X = array(dataArr); labelArray = array(classLabels)
-    m,n = shape(X)
-    w = zeros(n)
-    for i in range(m):
-        w += multiply(alphas[i]*labelArray[i],X[i])
-    return w
+    return dot(multiply(alphas, labelArray), X)
 
 def testRbf(k1=1.3):
     dataArr,labelArr = loadDataSet('testSetRBF.txt')
