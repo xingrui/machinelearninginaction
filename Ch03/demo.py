@@ -9,6 +9,8 @@ def tests():
     print myTree, labels
     print trees.classify(myTree, labels, [1,0])
     print trees.classify(myTree, labels, [1,1])
+    print trees.classify(myTree, labels, [0,0])
+    print trees.classify(myTree, labels, [0,1])
 
 def copyTest():
     # list test.
