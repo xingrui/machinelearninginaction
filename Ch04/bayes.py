@@ -18,7 +18,7 @@ def loadDataSet():
 
 def changeListToMap(vocabList):
     vocabMap = {}
-    for i in len(vocabList):
+    for i in xrange(len(vocabList)):
         vocabMap[vocabList[i]] = i
     return vocabMap
                  
@@ -28,10 +28,12 @@ def createVocabList(dataSet):
         vocabSet = vocabSet | set(document) #union of the two sets
     return list(vocabSet)
 
-def setOfWords2Vec(vocabList, inputSet):
+def setOfWords2Vec(vocabList, inputSet, vocabMap=None):
     returnVec = [0]*len(vocabList)
     for word in inputSet:
-        if word in vocabList:
+        if type(vocabMap) == dict and vocabMap.get(word) != None:
+            returnVec[vocabMap.get(word)] = 1
+        elif word in vocabList:
             returnVec[vocabList.index(word)] = 1
         else: print "the word: %s is not in my Vocabulary!" % word
     return returnVec
@@ -61,25 +63,28 @@ def classifyNB(vec2Classify, p0Vec, p1Vec, pClass1):
     else: 
         return 0
     
-def bagOfWords2VecMN(vocabList, inputSet):
+def bagOfWords2VecMN(vocabList, inputSet, vocabMap=None):
     returnVec = [0]*len(vocabList)
     for word in inputSet:
-        if word in vocabList:
+        if type(vocabMap) == dict and vocabMap.get(word) != None:
+            returnVec[vocabMap.get(word)] += 1
+        elif word in vocabList:
             returnVec[vocabList.index(word)] += 1
     return returnVec
 
 def testingNB():
     listOPosts,listClasses = loadDataSet()
     myVocabList = createVocabList(listOPosts)
+    myVocabMap = changeListToMap(myVocabList)
     trainMat=[]
     for postinDoc in listOPosts:
-        trainMat.append(setOfWords2Vec(myVocabList, postinDoc))
+        trainMat.append(setOfWords2Vec(myVocabList, postinDoc, myVocabMap))
     p0V,p1V,pAb = trainNB0(array(trainMat),array(listClasses))
     testEntry = ['love', 'my', 'dalmation']
-    thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
+    thisDoc = array(setOfWords2Vec(myVocabList, testEntry, myVocabMap))
     print testEntry,'classified as: ',classifyNB(thisDoc,p0V,p1V,pAb)
     testEntry = ['stupid', 'garbage']
-    thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
+    thisDoc = array(setOfWords2Vec(myVocabList, testEntry, myVocabMap))
     print testEntry,'classified as: ',classifyNB(thisDoc,p0V,p1V,pAb)
 
 def textParse(bigString):    #input is big string, #output is word list
@@ -105,13 +110,14 @@ def spamTest():
         testSet.append(trainingSet[randIndex])
         del(trainingSet[randIndex])  
     trainMat=[]; trainClasses = []
+    vocabMap = changeListToMap(vocabList)
     for docIndex in trainingSet:#train the classifier (get probs) trainNB0
-        trainMat.append(bagOfWords2VecMN(vocabList, docList[docIndex]))
+        trainMat.append(bagOfWords2VecMN(vocabList, docList[docIndex], vocabMap))
         trainClasses.append(classList[docIndex])
     p0V,p1V,pSpam = trainNB0(array(trainMat),array(trainClasses))
     errorCount = 0
     for docIndex in testSet:        #classify the remaining items
-        wordVector = bagOfWords2VecMN(vocabList, docList[docIndex])
+        wordVector = bagOfWords2VecMN(vocabList, docList[docIndex], vocabMap)
         if classifyNB(array(wordVector),p0V,p1V,pSpam) != classList[docIndex]:
             errorCount += 1
             print "classification error",docList[docIndex]
@@ -148,13 +154,14 @@ def localWords(feed1,feed0):
         testSet.append(trainingSet[randIndex])
         del(trainingSet[randIndex])  
     trainMat=[]; trainClasses = []
+    vocabMap = changeListToMap(vocabList)
     for docIndex in trainingSet:#train the classifier (get probs) trainNB0
-        trainMat.append(bagOfWords2VecMN(vocabList, docList[docIndex]))
+        trainMat.append(bagOfWords2VecMN(vocabList, docList[docIndex], vocabMap))
         trainClasses.append(classList[docIndex])
     p0V,p1V,pSpam = trainNB0(array(trainMat),array(trainClasses))
     errorCount = 0
     for docIndex in testSet:        #classify the remaining items
-        wordVector = bagOfWords2VecMN(vocabList, docList[docIndex])
+        wordVector = bagOfWords2VecMN(vocabList, docList[docIndex], vocabMap)
         if classifyNB(array(wordVector),p0V,p1V,pSpam) != classList[docIndex]:
             errorCount += 1
     print 'the error rate is: ',float(errorCount)/len(testSet)
