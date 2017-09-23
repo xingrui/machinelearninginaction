@@ -5,8 +5,6 @@ import regTrees
 
 import matplotlib
 matplotlib.use('TkAgg')
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
 
 def reDraw(tolS,tolN):
     reDraw.f.clf()        # clear the figure
@@ -45,6 +43,9 @@ def drawNewTree():
     
 root=Tk()
 
+
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
 reDraw.f = Figure(figsize=(5,4), dpi=100) #create canvas
 reDraw.canvas = FigureCanvasTkAgg(reDraw.f, master=root)
 reDraw.canvas.show()
@@ -63,8 +64,8 @@ chkBtnVar = IntVar()
 chkBtn = Checkbutton(root, text="Model Tree", variable = chkBtnVar)
 chkBtn.grid(row=3, column=0, columnspan=2)
 
-reDraw.rawDat = mat(regTrees.loadDataSet('sine.txt'))
-reDraw.testDat = arange(min(reDraw.rawDat[:,0]),max(reDraw.rawDat[:,0]),0.01)
+reDraw.rawDat = array(regTrees.loadDataSet('sine.txt'))
+reDraw.testDat = (arange(min(reDraw.rawDat[:,0]),max(reDraw.rawDat[:,0]),0.01)).reshape(-1,1)
 reDraw(1.0, 10)
                
 root.mainloop()
