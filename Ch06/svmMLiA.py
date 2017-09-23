@@ -57,7 +57,7 @@ def smoSimple(dataMatIn, classLabels, C, toler, maxIter, trace=False):
     dataArray = array(dataMatIn); labelArray = array(classLabels)
     b = 0; m,n = shape(dataArray)
     alphas = zeros(m)
-    storeArray = preprocess(dataArray, array(labelArray))
+    storeArray = preprocess(dataArray, labelArray)
     iter = 0
     while (iter < maxIter):
         alphaPairsChanged = 0
@@ -99,40 +99,40 @@ def smoSimple(dataMatIn, classLabels, C, toler, maxIter, trace=False):
 
 def kernelTrans(X, A, kTup): #calc the kernel or transform data to a higher dimensional space
     m,n = shape(X)
-    K = mat(zeros((m,1)))
-    if kTup[0]=='lin': K = X * A.T   #linear kernel
+    K = zeros(m)
+    if kTup[0]=='lin': K = dot(X, A)   #linear kernel
     elif kTup[0]=='rbf':
         for j in range(m):
-            deltaRow = X[j,:] - A
-            K[j] = deltaRow*deltaRow.T
+            deltaRow = X[j] - A
+            K[j] = vdot(deltaRow, deltaRow)
         K = exp(K/(-1*kTup[1]**2)) #divide in NumPy is element-wise not matrix like Matlab
     else: raise NameError('Houston We Have a Problem -- \
     That Kernel is not recognized')
     return K
 
 class optStruct:
-    def __init__(self,dataMatIn, classLabels, C, toler, kTup):  # Initialize the structure with the parameters 
-        self.X = dataMatIn
-        self.labelArray = classLabels
+    def __init__(self, dataArray, labelArray, C, toler, kTup):  # Initialize the structure with the parameters 
+        self.X = dataArray
+        self.labelArray = labelArray
         self.C = C
         self.tol = toler
-        self.m = shape(dataMatIn)[0]
+        self.m = shape(dataArray)[0]
         self.alphas = zeros(self.m)
         self.b = 0
-        self.eCache = mat(zeros((self.m,2))) #first column is valid flag
-        self.K = mat(zeros((self.m,self.m)))
+        self.eCache = zeros((self.m,2)) #first column is valid flag
+        self.K = zeros((self.m,self.m))
         for i in range(self.m):
-            self.K[:,i] = kernelTrans(self.X, self.X[i,:], kTup)
+            self.K[:,i] = kernelTrans(self.X, self.X[i], kTup)
         
 def calcEk(oS, k):
-    fXk = vdot(multiply(oS.alphas,oS.labelArray), oS.K.A[:,k]) + oS.b
+    fXk = vdot(multiply(oS.alphas,oS.labelArray), oS.K[:,k]) + oS.b
     Ek = fXk - oS.labelArray[k]
     return Ek
         
 def selectJ(i, oS, Ei):         #this is the second choice -heurstic, and calcs Ej
     maxK = -1; maxDeltaE = 0; Ej = 0
     oS.eCache[i] = [1,Ei]  #set valid #choose the alpha that gives the maximum delta E
-    validEcacheList = nonzero(oS.eCache[:,0].A)[0]
+    validEcacheList = nonzero(oS.eCache[:,0])[0]
     if (len(validEcacheList)) > 1:
         for k in validEcacheList:   #loop through valid Ecache values and find the one that maximizes delta E
             if k == i: continue #don't calc for i, waste of time
@@ -179,7 +179,7 @@ def innerL(i, oS):
     else: return 0
 
 def smoP(dataMatIn, classLabels, C, toler, maxIter,kTup=('lin', 0), trace=False):    #full Platt SMO
-    oS = optStruct(mat(dataMatIn),array(classLabels),C,toler, kTup)
+    oS = optStruct(array(dataMatIn),array(classLabels),C,toler, kTup)
     storeArray = preprocess(array(dataMatIn), array(classLabels))
     iter = 0
     entireSet = True; alphaPairsChanged = 0
@@ -207,36 +207,35 @@ def smoP(dataMatIn, classLabels, C, toler, maxIter,kTup=('lin', 0), trace=False)
     return oS.b,oS.alphas
 
 def calcWs(alphas,dataArr,classLabels):
-    X = mat(dataArr); labelMat = mat(classLabels).T
+    X = array(dataArr); labelArray = array(classLabels)
     m,n = shape(X)
-    w = zeros((n,1))
+    w = zeros(n)
     for i in range(m):
-        w += multiply(alphas[i]*labelMat[i],X[i,:].T)
+        w += multiply(alphas[i]*labelArray[i],X[i])
     return w
 
 def testRbf(k1=1.3):
     dataArr,labelArr = loadDataSet('testSetRBF.txt')
     b,alphas = smoP(dataArr, labelArr, 200, 0.0001, 10000, ('rbf', k1)) #C=200 important
-    alphas = mat(alphas).T
-    datMat=mat(dataArr); labelMat = mat(labelArr).T
-    svInd=nonzero(alphas.A>0)[0]
-    sVs=datMat[svInd] #get matrix of only support vectors
-    labelSV = labelMat[svInd];
+    dataArray=array(dataArr); labelArray = array(labelArr)
+    svInd=nonzero(alphas>0)[0]
+    sVs=dataArray[svInd] #get matrix of only support vectors
+    labelSV = labelArray[svInd];
     print "there are %d Support Vectors" % shape(sVs)[0]
-    m,n = shape(datMat)
+    m,n = shape(dataArray)
     errorCount = 0
     for i in range(m):
-        kernelEval = kernelTrans(sVs,datMat[i,:],('rbf', k1))
-        predict=kernelEval.T * multiply(labelSV,alphas[svInd]) + b
+        kernelEval = kernelTrans(sVs,dataArray[i,:],('rbf', k1))
+        predict=vdot(kernelEval, multiply(labelSV,alphas[svInd])) + b
         if sign(predict)!=sign(labelArr[i]): errorCount += 1
     print "the training error rate is: %f" % (float(errorCount)/m)
     dataArr,labelArr = loadDataSet('testSetRBF2.txt')
     errorCount = 0
-    datMat=mat(dataArr); labelMat = mat(labelArr).T
-    m,n = shape(datMat)
+    dataArray=array(dataArr);
+    m,n = shape(dataArray)
     for i in range(m):
-        kernelEval = kernelTrans(sVs,datMat[i,:],('rbf', k1))
-        predict=kernelEval.T * multiply(labelSV,alphas[svInd]) + b
+        kernelEval = kernelTrans(sVs,dataArray[i,:],('rbf', k1))
+        predict=vdot(kernelEval, multiply(labelSV,alphas[svInd])) + b
         if sign(predict)!=sign(labelArr[i]): errorCount += 1    
     print "the test error rate is: %f" % (float(errorCount)/m)    
     
@@ -266,25 +265,24 @@ def loadImages(dirName):
 def testDigits(kTup=('rbf', 10)):
     dataArr,labelArr = loadImages('trainingDigits')
     b,alphas = smoP(dataArr, labelArr, 200, 0.0001, 10000, kTup)
-    alphas = mat(alphas).T
-    datMat=mat(dataArr); labelMat = mat(labelArr).T
-    svInd=nonzero(alphas.A>0)[0]
-    sVs=datMat[svInd] 
-    labelSV = labelMat[svInd];
+    dataArray=array(dataArr); labelArray=array(labelArr)
+    svInd=nonzero(alphas>0)[0]
+    sVs=dataArray[svInd] 
+    labelSV = labelArray[svInd];
     print "there are %d Support Vectors" % shape(sVs)[0]
-    m,n = shape(datMat)
+    m,n = shape(dataArray)
     errorCount = 0
     for i in range(m):
-        kernelEval = kernelTrans(sVs,datMat[i,:],kTup)
-        predict=kernelEval.T * multiply(labelSV,alphas[svInd]) + b
+        kernelEval = kernelTrans(sVs,dataArray[i,:],kTup)
+        predict=vdot(kernelEval, multiply(labelSV,alphas[svInd])) + b
         if sign(predict)!=sign(labelArr[i]): errorCount += 1
     print "the training error rate is: %f" % (float(errorCount)/m)
     dataArr,labelArr = loadImages('testDigits')
     errorCount = 0
-    datMat=mat(dataArr); labelMat = mat(labelArr).T
-    m,n = shape(datMat)
+    dataArray=array(dataArr);
+    m,n = shape(dataArray)
     for i in range(m):
-        kernelEval = kernelTrans(sVs,datMat[i,:],kTup)
-        predict=kernelEval.T * multiply(labelSV,alphas[svInd]) + b
+        kernelEval = kernelTrans(sVs,dataArray[i,:],kTup)
+        predict=vdot(kernelEval, multiply(labelSV,alphas[svInd])) + b
         if sign(predict)!=sign(labelArr[i]): errorCount += 1    
     print "the test error rate is: %f" % (float(errorCount)/m) 
