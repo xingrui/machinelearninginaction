@@ -8,12 +8,8 @@ from time import sleep
 import sys
 
 def preprocess(dataArray, labelArray):
-    m, n = shape(dataArray)
-    storeDataArray = zeros((m, m))
+    storeDataArray = dot(dataArray, dataArray.T)
     storeLabelArray = dot(reshape(labelArray, (-1,1)), reshape(labelArray, (1,-1)))
-    for i in xrange(0,m):
-        for j in xrange(0,m):
-            storeDataArray[i,j] = vdot(dataArray[i], dataArray[j])
     return multiply(storeDataArray, storeLabelArray)
 
 # goal : maximize this calculateValue result
