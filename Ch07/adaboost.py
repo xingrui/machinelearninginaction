@@ -6,7 +6,7 @@ Adaboost is short for Adaptive Boosting
 from numpy import *
 
 def loadSimpData():
-    datMat = matrix([[ 1. ,  2.1],
+    datMat = array([[ 1. ,  2.1],
         [ 2. ,  1.1],
         [ 1.3,  1. ],
         [ 1. ,  1. ],
@@ -23,27 +23,27 @@ def loadDataSet(fileName):      #general function to parse tab -delimited floats
         labelMat.append(float(curLine[-1]))
     return dataMat,labelMat
 
-def stumpClassify(dataMatrix,dimen,threshVal,threshIneq):#just classify the data
-    retArray = ones(shape(dataMatrix)[0])
+def stumpClassify(dataArray,dimen,threshVal,threshIneq):#just classify the data
+    retArray = ones(shape(dataArray)[0])
     if threshIneq == 'lt':
-        retArray[dataMatrix.A[:,dimen] <= threshVal] = -1.0
+        retArray[dataArray[:,dimen] <= threshVal] = -1.0
     else:
-        retArray[dataMatrix.A[:,dimen] > threshVal] = -1.0
+        retArray[dataArray[:,dimen] > threshVal] = -1.0
     return retArray
     
 
 def buildStump(dataArr,classLabels,D):
-    dataMatrix = mat(dataArr); labelArray = array(classLabels)
-    m,n = shape(dataMatrix)
+    dataArray = array(dataArr); labelArray = array(classLabels)
+    m,n = shape(dataArray)
     numSteps = 10.0; bestStump = {}; bestClasEst = zeros(m)
     minError = inf #init error sum, to +infinity
     for i in range(n):#loop over all dimensions
-        rangeMin = dataMatrix[:,i].min(); rangeMax = dataMatrix[:,i].max();
+        rangeMin = dataArray[:,i].min(); rangeMax = dataArray[:,i].max();
         stepSize = (rangeMax-rangeMin)/numSteps
         for j in range(-1,int(numSteps)+1):#loop over all range in current dimension
             for inequal in ['lt', 'gt']: #go over less than and greater than
                 threshVal = (rangeMin + float(j) * stepSize)
-                predictedVals = stumpClassify(dataMatrix,i,threshVal,inequal)#call stump classify with i, j, lessThan
+                predictedVals = stumpClassify(dataArray,i,threshVal,inequal)#call stump classify with i, j, lessThan
                 errArr = ones(m)
                 errArr[predictedVals == labelArray] = 0
                 weightedError = vdot(D,errArr)  #calc total error multiplied by D
@@ -83,11 +83,11 @@ def adaBoostTrainDS(dataArr,classLabels,numIt=40,retAgg=False):
     else:return weakClassArr
 
 def adaClassify(datToClass,classifierArr):
-    dataMatrix = mat(datToClass)#do stuff similar to last aggClassEst in adaBoostTrainDS
-    m = shape(dataMatrix)[0]
+    dataArray = array(datToClass)#do stuff similar to last aggClassEst in adaBoostTrainDS
+    m = shape(dataArray)[0]
     aggClassEst = zeros(m)
     for classifier in classifierArr:
-        classEst = stumpClassify(dataMatrix, classifier['dim'],\
+        classEst = stumpClassify(dataArray, classifier['dim'],\
                                  classifier['thresh'],\
                                  classifier['ineq'])#call stump classify
         aggClassEst += classifier['alpha']*classEst
