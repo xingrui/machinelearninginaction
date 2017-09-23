@@ -14,7 +14,7 @@ dataMat = pca.replaceNanWithMean()
 meanVals = mean(dataMat, axis=0)
 meanRemoved = dataMat - meanVals #remove mean
 covMat = cov(meanRemoved, rowvar=0)
-eigVals,eigVects = linalg.eig(mat(covMat))
+eigVals,eigVects = linalg.eig(array(covMat))
 eigValInd = argsort(eigVals)            #sort, sort goes smallest to largest
 eigValInd = eigValInd[::-1]#reverse
 sortedEigVals = eigVals[eigValInd]

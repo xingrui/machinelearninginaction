@@ -19,7 +19,7 @@ def distEclud(vecA, vecB):
 
 def randCent(dataSet, k):
     n = shape(dataSet)[1]
-    centroids = zeros((k,n))#create centroid mat
+    centroids = zeros((k,n))#create centroid array
     for j in range(n):#create random cluster centers, within bounds of each dimension
         minJ = min(dataSet[:,j]) 
         rangeJ = float(max(dataSet[:,j]) - minJ)
@@ -28,7 +28,7 @@ def randCent(dataSet, k):
     
 def kMeans(dataSet, k, distMeas=distEclud, createCent=randCent):
     m = shape(dataSet)[0]
-    clusterAssment = array(zeros((m,2)))#create mat to assign data points 
+    clusterAssment = array(zeros((m,2)))#create array to assign data points 
                                       #to a centroid, also holds SE of each point
     centroids = createCent(dataSet, k)
     clusterChanged = True
