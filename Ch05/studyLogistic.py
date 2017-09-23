@@ -2,20 +2,19 @@ import logRegres
 from numpy import *
 
 def functionForStudy():
-    dataArr, labelMat = logRegres.loadDataSet()
-    weights = logRegres.gradAscent(dataArr, labelMat, True)
-    print weights.A
-    labelH = mat(labelMat).T
-    labelArr = array(labelH)
-    sigmoidRes = logRegres.sigmoid(dataArr*weights)
-    error = sigmoidRes - labelH
+    dataArr, labelArr = logRegres.loadDataSet()
+    weights = logRegres.gradAscent(dataArr, labelArr, True)
+    print weights
+    labelArray = array(labelArr)
+    sigmoidRes = logRegres.sigmoid(dot(dataArr,weights))
+    error = sigmoidRes - labelArray
     # GOAL : choose weights so that the error is minimized.
     errorCount = (nonzero(abs(error) > 0.5)[0]).shape
-    print errorCount[1]
+    print errorCount[0]
     # but error is a vector, so how to define minimized?(Cost Function)
     # for example : using min errorCount; but how to adjust weights when using this goal?
     # actual choosed Cost function as following. using maximum likelihood estimate.
-    costFunction = -(labelArr * (log(array(sigmoidRes))) + (1 - labelArr) * log(array(1-sigmoidRes)))
+    costFunction = -vdot(labelArray, (log(sigmoidRes))) + vdot((1 - labelArray), log(array(1-sigmoidRes)))
     # J function is the average value of all costFunction values for all examples.
     J = sum(costFunction)
     print J

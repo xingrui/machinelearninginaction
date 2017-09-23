@@ -6,13 +6,13 @@ Logistic Regression Working Module
 from numpy import *
 
 def loadDataSet():
-    dataMat = []; labelMat = []
+    dataArr = []; labelArr = []
     fr = open('testSet.txt')
     for line in fr.readlines():
         lineArr = line.strip().split()
-        dataMat.append([1.0, float(lineArr[0]), float(lineArr[1])])
-        labelMat.append(int(lineArr[2]))
-    return dataMat,labelMat
+        dataArr.append([1.0, float(lineArr[0]), float(lineArr[1])])
+        labelArr.append(int(lineArr[2]))
+    return dataArr,labelArr
 
 def sigmoid(inX):
     return 1.0/(1+exp(-inX))
@@ -21,34 +21,34 @@ def sigmoid(inX):
 logitisc regression goal :
 minimized the total/average cost for following calculateCost function.
 '''
-def calculateCost(labelMat, sigmoidMat):
-    costFunction = -(multiply(labelMat, log(sigmoidMat)) + multiply((1 - labelMat), log(1 - sigmoidMat)))
-    return sum(costFunction)
+def calculateCost(labelArray, sigmoidArray):
+    costFunction = -(vdot(labelArray, log(sigmoidArray)) + vdot((1 - labelArray), log(1 - sigmoidArray)))
+    return costFunction
 
-def gradAscent(dataMatIn, classLabels, trace=False):
-    dataMatrix = mat(dataMatIn)             #convert to NumPy matrix
-    labelMat = mat(classLabels).T #convert to NumPy matrix
-    m,n = shape(dataMatrix)
+def gradAscent(dataArrIn, classLabels, trace=False):
+    dataArray = array(dataArrIn)
+    labelArray = array(classLabels) 
+    m,n = shape(dataArray)
     alpha = 0.001
     maxCycles = 500
-    weights = ones((n,1))
+    weights = ones(n)
     for k in range(maxCycles):              #heavy on matrix operations
-        h = sigmoid(dataMatrix*weights)     #matrix mult
-        error = (labelMat - h)              #vector subtraction
-        weights = weights + alpha * dataMatrix.T * error #matrix mult
+        h = sigmoid(dot(dataArray,weights))     #matrix mult (M,N) dot (N,) -> (M,)
+        error = (labelArray - h)              #vector subtraction
+        weights = weights + alpha * dot(dataArray.T, error) #matrix mult (N,M) dot (M,) -> (N,)
         # print total cost for each step. and we will see that the cost is decreasing.
-        if trace:print calculateCost(labelMat, h)
+        if trace:print calculateCost(labelArray, h)
     return weights
 
 def plotBestFit(weights):
     import matplotlib.pyplot as plt
-    dataMat,labelMat=loadDataSet()
-    dataArr = array(dataMat)
+    dataArr,labelArr=loadDataSet()
+    dataArr = array(dataArr)
     n = shape(dataArr)[0] 
     xcord1 = []; ycord1 = []
     xcord2 = []; ycord2 = []
     for i in range(n):
-        if int(labelMat[i])== 1:
+        if int(labelArr[i])== 1:
             xcord1.append(dataArr[i,1]); ycord1.append(dataArr[i,2])
         else:
             xcord2.append(dataArr[i,1]); ycord2.append(dataArr[i,2])
@@ -62,32 +62,32 @@ def plotBestFit(weights):
     plt.xlabel('X1'); plt.ylabel('X2');
     plt.show()
 
-def stocGradAscent0(dataMatrix, classLabels):
-    m,n = shape(dataMatrix)
+def stocGradAscent0(dataArray, classLabels):
+    m,n = shape(dataArray)
     alpha = 0.01
     weights = ones(n)   #initialize to all ones
     for i in range(m):
-        h = sigmoid(sum(dataMatrix[i]*weights))
+        h = sigmoid(vdot(dataArray[i],weights))
         error = classLabels[i] - h
-        weights = weights + alpha * error * dataMatrix[i]
+        weights = weights + alpha * error * dataArray[i]
     return weights
 
-def stocGradAscent1(dataMatrix, classLabels, numIter=150):
-    m,n = shape(dataMatrix)
+def stocGradAscent1(dataArray, classLabels, numIter=150):
+    m,n = shape(dataArray)
     weights = ones(n)   #initialize to all ones
     for j in range(numIter):
         dataIndex = range(m)
         for i in range(m):
             alpha = 4/(1.0+j+i)+0.0001    #apha decreases with iteration, does not 
             randIndex = int(random.uniform(0,len(dataIndex)))#go to 0 because of the constant
-            h = sigmoid(sum(dataMatrix[randIndex]*weights))
+            h = sigmoid(vdot(dataArray[randIndex],weights))
             error = classLabels[randIndex] - h
-            weights = weights + alpha * error * dataMatrix[randIndex]
+            weights = weights + alpha * error * dataArray[randIndex]
             del(dataIndex[randIndex])
     return weights
 
 def classifyVector(inX, weights):
-    prob = sigmoid(sum(inX*weights))
+    prob = sigmoid(vdot(inX,weights))
     if prob > 0.5: return 1.0
     else: return 0.0
 
@@ -96,7 +96,7 @@ def colicTest():
     trainingSet = []; trainingLabels = []
     for line in frTrain.readlines():
         currLine = line.strip().split('\t')
-        trainingSet.append(map(float, currLine[:-1])
+        trainingSet.append(map(float, currLine[:-1]))
         trainingLabels.append(float(currLine[-1]))
     trainWeights = stocGradAscent1(array(trainingSet), trainingLabels, 1000)
     errorCount = 0; numTestVec = 0.0
