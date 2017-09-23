@@ -2,7 +2,7 @@ from numpy import *
 import kMeans 
 
 def testbiKmeans():
-    datMat = mat(kMeans.loadDataSet('testSet2.txt'))
+    datMat = array(kMeans.loadDataSet('testSet2.txt'))
     centList, myNewAssments = kMeans.biKmeans(datMat, 3)
     print centList 
 
@@ -11,4 +11,4 @@ def testMap():
 
 if __name__ == "__main__":
     testbiKmeans()
-    #testMap()
+    testMap()
