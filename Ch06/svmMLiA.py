@@ -8,8 +8,8 @@ from time import sleep
 import sys
 
 def preprocess(dataArray, labelArray):
-    storeDataArray = dot(dataArray, dataArray.T)
-    storeLabelArray = dot(reshape(labelArray, (-1,1)), reshape(labelArray, (1,-1)))
+    storeDataArray = dot(dataArray, dataArray.T) # (M,N) dot (N,M) -> (M,M)
+    storeLabelArray = dot(reshape(labelArray, (-1,1)), reshape(labelArray, (1,-1))) # (M,1) dot (1,M) -> (M,M)
     return multiply(storeDataArray, storeLabelArray)
 
 # goal : maximize this calculateValue result
@@ -17,7 +17,7 @@ def preprocess(dataArray, labelArray):
 # 1 / sqrt(wTw) means the min value of distance from super plane and points(support vector points)
 # it shows that the result is increasing, but the distance is not always increasing.
 def calculateValue(alphas, storeArray):
-    alphasArray = dot(reshape(alphas, (-1,1)), reshape(alphas, (1,-1)))
+    alphasArray = dot(reshape(alphas, (-1,1)), reshape(alphas, (1,-1))) # (M,1) dot (1,M) -> (M,M)
     wTw = sum(multiply(alphasArray, storeArray))
     return sum(alphas) - 0.5 * wTw, 1 / sqrt(wTw)
 
@@ -58,11 +58,11 @@ def smoSimple(dataMatIn, classLabels, C, toler, maxIter, trace=False):
     while (iter < maxIter):
         alphaPairsChanged = 0
         for i in range(m):
-            fXi = vdot(multiply(alphas,labelArray), dot(dataArray,dataArray[i])) + b
+            fXi = vdot(multiply(alphas,labelArray), dot(dataArray,dataArray[i])) + b # (M,N) dot (N,) -> (M,)
             Ei = fXi - float(labelArray[i])#if checks if an example violates KKT conditions
             if ((labelArray[i]*Ei < -toler) and (alphas[i] < C)) or ((labelArray[i]*Ei > toler) and (alphas[i] > 0)):
                 j = selectJrand(i,m)
-                fXj = vdot(multiply(alphas,labelArray), dot(dataArray,dataArray[j])) + b
+                fXj = vdot(multiply(alphas,labelArray), dot(dataArray,dataArray[j])) + b # (M,N) dot (N,) -> (M,)
                 Ej = fXj - float(labelArray[j])
                 alphaIold = alphas[i]; alphaJold = alphas[j];
                 if (labelArray[i] != labelArray[j]):
@@ -96,7 +96,7 @@ def smoSimple(dataMatIn, classLabels, C, toler, maxIter, trace=False):
 def kernelTrans(X, A, kTup): #calc the kernel or transform data to a higher dimensional space
     m,n = shape(X)
     K = zeros(m)
-    if kTup[0]=='lin': K = dot(X, A)   #linear kernel
+    if kTup[0]=='lin': K = dot(X, A)   #linear kernel (M,M) dot (M,) -> (M,)
     elif kTup[0]=='rbf':
         for j in range(m):
             deltaRow = X[j] - A
@@ -204,7 +204,7 @@ def smoP(dataMatIn, classLabels, C, toler, maxIter,kTup=('lin', 0), trace=False)
 
 def calcWs(alphas,dataArr,classLabels):
     X = array(dataArr); labelArray = array(classLabels)
-    return dot(multiply(alphas, labelArray), X)
+    return dot(multiply(alphas, labelArray), X) # (M,) dot (M,N) -> (N,)
 
 def testRbf(k1=1.3):
     dataArr,labelArr = loadDataSet('testSetRBF.txt')
