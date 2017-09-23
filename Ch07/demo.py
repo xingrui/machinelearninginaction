@@ -3,9 +3,9 @@ import adaboost
 
 def testLoadDataSet(filename):
     dataMat, labelMat = adaboost.loadDataSet(filename)
-    print mat(dataMat).shape, mat(labelMat).shape
-    assert mat(dataMat).shape == (67, 21)
-    assert mat(labelMat).shape == (1, 67)
+    print array(dataMat).shape, array(labelMat).shape
+    assert array(dataMat).shape == (67, 21)
+    assert array(labelMat).shape == (67, )
 
 def testBuildStump():
     D = ones(5)/5
