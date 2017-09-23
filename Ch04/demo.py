@@ -2,6 +2,7 @@ import bayes
 
 def tests():
     bayes.testingNB()
+    bayes.spamTest()
 
 def main():
     tests()
