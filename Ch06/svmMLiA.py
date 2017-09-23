@@ -9,7 +9,7 @@ import sys
 
 def preprocess(dataArray, labelArray):
     storeDataArray = dot(dataArray, dataArray.T) # (M,N) dot (N,M) -> (M,M)
-    storeLabelArray = dot(reshape(labelArray, (-1,1)), reshape(labelArray, (1,-1))) # (M,1) dot (1,M) -> (M,M)
+    storeLabelArray = outer(labelArray, labelArray)
     return multiply(storeDataArray, storeLabelArray)
 
 # goal : maximize this calculateValue result
@@ -17,7 +17,7 @@ def preprocess(dataArray, labelArray):
 # 1 / sqrt(wTw) means the min value of distance from super plane and points(support vector points)
 # it shows that the result is increasing, but the distance is not always increasing.
 def calculateValue(alphas, storeArray):
-    alphasArray = dot(reshape(alphas, (-1,1)), reshape(alphas, (1,-1))) # (M,1) dot (1,M) -> (M,M)
+    alphasArray = outer(alphas, alphas)
     wTw = sum(multiply(alphasArray, storeArray))
     return sum(alphas) - 0.5 * wTw, 1 / sqrt(wTw)
 
