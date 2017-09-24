@@ -56,30 +56,43 @@ def ridgeTest():
 
 def stageWiseTest():
     xArr, yArr = regression.loadDataSet('abalone.txt')
-    print regression.stageWise(xArr, yArr, 0.01, 200)
-    print regression.stageWise(xArr, yArr, 0.001, 5000)
+    ridgeWeights = regression.stageWise(xArr, yArr, 0.005, 1000)
     xMat = mat(xArr)
     yMat = mat(yArr).T
     xMat = regression.regularize(xMat)
     yM = mean(yMat, 0)
     yMat = yMat - yM
     weights = regression.standRegres(xMat, yMat.T)
+    print ridgeWeights[-1]
     print weights.T
+    import matplotlib.pyplot as plt
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(ridgeWeights)
+    plt.show()
+
+#should only called once. (should not run again because lego.txt is in git now).
+def initLegoDataSet():
+    regression.setDataCollectFromHtml('lego.txt')
 
 def crossValidationTest():
-    #regression.crossValidation(lgX,lgY,10)
-    lgX = []; lgY = []
-    regression.setDataCollect(lgX,lgY)
-    regression.ridgeTest(lgX,lgY,10)
+    lgX, lgY = regression.loadDataSet('lego.txt')
+    m, n = array(lgX).shape
+    lgX1 = array(ones((m,n+1)))
+    lgX1[:,1:n+1] = array(lgX)
+    ws = regression.standRegres(lgX1,lgY)
+    print ws.T
+    regression.crossValidation(lgX,lgY,10)
+    regression.ridgeTest(lgX,lgY)
 
 def tryTest(function):
     try:
         function()
     except RuntimeError, e:
-        print e
+        print 'catch RuntimeError[', e ,'] in function ', function.__name__
 
 def main():
-    #tryTest(crossValidationTest)
+    tryTest(crossValidationTest)
     tryTest(stageWiseTest)
     tryTest(ridgeTest)
     tryTest(normalRegression)
