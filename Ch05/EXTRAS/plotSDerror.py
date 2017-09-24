@@ -9,21 +9,21 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import logRegres
 
-def stocGradAscent0(dataMatrix, classLabels):
-    m,n = shape(dataMatrix)
+def stocGradAscent0(dataArrayay, classLabels):
+    m,n = shape(dataArrayay)
     alpha = 0.5
     weights = ones(n)   #initialize to all ones
     weightsHistory=zeros((500*m,n))
     for j in range(500):
         for i in range(m):
-            h = logRegres.sigmoid(sum(dataMatrix[i]*weights))
+            h = logRegres.sigmoid(sum(dataArrayay[i]*weights))
             error = classLabels[i] - h
-            weights = weights + alpha * error * dataMatrix[i]
+            weights = weights + alpha * error * dataArrayay[i]
             weightsHistory[j*m + i] = weights
     return weightsHistory
 
-def stocGradAscent1(dataMatrix, classLabels):
-    m,n = shape(dataMatrix)
+def stocGradAscent1(dataArrayay, classLabels):
+    m,n = shape(dataArrayay)
     alpha = 0.4
     weights = ones(n)   #initialize to all ones
     weightsHistory=zeros((40*m,n))
@@ -32,22 +32,22 @@ def stocGradAscent1(dataMatrix, classLabels):
         for i in range(m):
             alpha = 4/(1.0+j+i)+0.01
             randIndex = int(random.uniform(0,len(dataIndex)))
-            h = logRegres.sigmoid(sum(dataMatrix[randIndex]*weights))
+            h = logRegres.sigmoid(sum(dataArrayay[randIndex]*weights))
             error = classLabels[randIndex] - h
             #print error
-            weights = weights + alpha * error * dataMatrix[randIndex]
+            weights = weights + alpha * error * dataArrayay[randIndex]
             weightsHistory[j*m + i] = weights
             del(dataIndex[randIndex])
     print weights
     return weightsHistory
     
 
-dataMat,labelMat=logRegres.loadDataSet()
-dataArr = array(dataMat)
-myHist = stocGradAscent1(dataArr,labelMat)
+dataArr,labelArr=logRegres.loadDataSet()
+dataArray = array(dataArr)
+myHist = stocGradAscent1(dataArray,labelArr)
 
 
-n = shape(dataArr)[0] #number of points to create
+n = shape(dataArray)[0] #number of points to create
 xcord1 = []; ycord1 = []
 xcord2 = []; ycord2 = []
 

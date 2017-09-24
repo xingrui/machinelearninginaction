@@ -9,21 +9,21 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import logRegres
 
-dataMat,labelMat=logRegres.loadDataSet()
-dataArr = array(dataMat)
-weights = logRegres.stocGradAscent0(dataArr,labelMat)
+dataArr,labelArr=logRegres.loadDataSet()
+dataArray = array(dataArr)
+weights = logRegres.stocGradAscent0(dataArray,labelArr)
 
-n = shape(dataArr)[0] #number of points to create
+n = shape(dataArray)[0] #number of points to create
 xcord1 = []; ycord1 = []
 xcord2 = []; ycord2 = []
 
 markers =[]
 colors =[]
 for i in range(n):
-    if int(labelMat[i])== 1:
-        xcord1.append(dataArr[i,1]); ycord1.append(dataArr[i,2])
+    if int(labelArr[i])== 1:
+        xcord1.append(dataArray[i,1]); ycord1.append(dataArray[i,2])
     else:
-        xcord2.append(dataArr[i,1]); ycord2.append(dataArr[i,2])
+        xcord2.append(dataArray[i,1]); ycord2.append(dataArray[i,2])
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
