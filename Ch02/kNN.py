@@ -83,12 +83,11 @@ def classifyPerson():
     print "You will probably like this person: %s" % resultList[classifierResult - 1]
     
 def img2vector(filename):
-    returnVect = zeros((32,32))
+    returnVect = []
     fr = open(filename)
-    for i in range(32):
-        lineStr = fr.readline()
-        returnVect[i] = map(int, lineStr.strip())
-    return returnVect.reshape(1,-1)
+    for line in fr.readlines():
+        returnVect.extend(map(int, line.strip()))
+    return array(returnVect)
 
 def handwritingClassTest():
     hwLabels = []

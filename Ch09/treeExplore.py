@@ -65,7 +65,7 @@ chkBtn = Checkbutton(root, text="Model Tree", variable = chkBtnVar)
 chkBtn.grid(row=3, column=0, columnspan=2)
 
 reDraw.rawDat = array(regTrees.loadDataSet('sine.txt'))
-reDraw.testDat = (arange(min(reDraw.rawDat[:,0]),max(reDraw.rawDat[:,0]),0.01)).reshape(-1,1)
+reDraw.testDat = (arange(min(reDraw.rawDat[:,0]),max(reDraw.rawDat[:,0]),0.01))[:,newaxis]
 reDraw(1.0, 10)
                
 root.mainloop()

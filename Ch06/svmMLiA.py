@@ -229,12 +229,11 @@ def testRbf(k1=1.3):
     print "the test error rate is: %f" % (float(errorCount)/m)    
     
 def img2vector(filename):
-    returnVect = zeros((32,32))
+    returnVect = []
     fr = open(filename)
-    for i in range(32):
-        lineStr = fr.readline()
-        returnVect[i] = map(int, lineStr.strip())
-    return returnVect.reshape(1,-1)
+    for line in fr.readlines():
+        returnVect.extend(map(int, line.strip()))
+    return array(returnVect)
 
 def loadImages(dirName):
     from os import listdir
