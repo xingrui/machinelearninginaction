@@ -6,13 +6,13 @@ Tree-Based Regression Methods
 from numpy import *
 
 def loadDataSet(fileName):      #general function to parse tab -delimited floats
-    dataMat = []                #assume last column is target value
+    dataArr = []                #assume last column is target value
     fr = open(fileName)
     for line in fr.readlines():
         curLine = line.strip().split('\t')
         fltLine = map(float,curLine) #map all elements to float()
-        dataMat.append(fltLine)
-    return dataMat
+        dataArr.append(fltLine)
+    return dataArr
 
 def binSplitDataSet(dataArray, feature, value):
     array0 = dataArray[nonzero(dataArray[:,feature] > value)[0]]
@@ -72,7 +72,7 @@ def chooseBestSplit(dataArray, leafType=regLeaf, errType=regErr, ops=(1,4)):
     return bestIndex,bestValue#returns the best feature to split on
                               #and the value used for that split
 
-def createTree(dataSet, leafType=regLeaf, errType=regErr, ops=(1,4)):#assume dataArray is NumPy Mat so we can array filtering
+def createTree(dataSet, leafType=regLeaf, errType=regErr, ops=(1,4)):#assume dataArray is NumPy array so we can array filtering
     dataArray = array(dataSet)
     feat, val = chooseBestSplit(dataArray, leafType, errType, ops)#choose the best split
 

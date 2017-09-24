@@ -2,8 +2,8 @@ from numpy import *
 import kMeans 
 
 def testbiKmeans():
-    datMat = array(kMeans.loadDataSet('testSet2.txt'))
-    centList, myNewAssments = kMeans.biKmeans(datMat, 3)
+    dataArray = array(kMeans.loadDataSet('testSet2.txt'))
+    centList, myNewAssments = kMeans.biKmeans(dataArray, 3)
     print centList 
 
 def testMap():

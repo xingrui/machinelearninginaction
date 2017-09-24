@@ -6,13 +6,13 @@ k Means Clustering for Ch10 of Machine Learning in Action
 from numpy import *
 
 def loadDataSet(fileName):      #general function to parse tab -delimited floats
-    dataMat = []                #assume last column is target value
+    dataArr = []                #assume last column is target value
     fr = open(fileName)
     for line in fr.readlines():
         curLine = line.strip().split('\t')
         fltLine = map(float,curLine) #map all elements to float()
-        dataMat.append(fltLine)
-    return dataMat
+        dataArr.append(fltLine)
+    return dataArr
 
 def distEclud(vecA, vecB):
     return sqrt(sum(square(vecA - vecB))) #linalg.norm(vecA-vecB)
@@ -59,13 +59,13 @@ def biKmeans(dataSet, k, distMeas=distEclud):
         lowestSSE = inf
         for i in range(len(centList)):
             ptsInCurrCluster = dataSet[nonzero(clusterAssment[:,0]==i)[0]]#get the data points currently in cluster i
-            centroidMat, splitClustAss = kMeans(ptsInCurrCluster, 2, distMeas)
+            centroidArray, splitClustAss = kMeans(ptsInCurrCluster, 2, distMeas)
             sseSplit = sum(splitClustAss[:,1])#compare the SSE to the currrent minimum
             sseNotSplit = sum(clusterAssment[nonzero(clusterAssment[:,0]!=i)[0],1])
             print "sseSplit, and notSplit: ",sseSplit,sseNotSplit
             if (sseSplit + sseNotSplit) < lowestSSE:
                 bestCentToSplit = i
-                bestNewCents = centroidMat
+                bestNewCents = centroidArray
                 bestClustAss = splitClustAss.copy()
                 lowestSSE = sseSplit + sseNotSplit
         bestClustAss[nonzero(bestClustAss[:,0] == 1)[0],0] = len(centList) #change 1 to 3,4, or whatever
@@ -120,8 +120,8 @@ def clusterClubs(numClust=5):
     for line in open('places.txt').readlines():
         lineArr = line.split('\t')
         datList.append([float(lineArr[4]), float(lineArr[3])])
-    datMat = array(datList)
-    myCentroids, clustAssing = biKmeans(datMat, numClust, distMeas=distSLC)
+    dataArray = array(datList)
+    myCentroids, clustAssing = biKmeans(dataArray, numClust, distMeas=distSLC)
     fig = plt.figure()
     rect=[0.1,0.1,0.8,0.8]
     scatterMarkers=['s', 'o', '^', '8', 'p', \
@@ -132,7 +132,7 @@ def clusterClubs(numClust=5):
     ax0.imshow(imgP)
     ax1=fig.add_axes(rect, label='ax1', frameon=False)
     for i in range(numClust):
-        ptsInCurrCluster = datMat[nonzero(clustAssing[:,0]==i)[0]]
+        ptsInCurrCluster = dataArray[nonzero(clustAssing[:,0]==i)[0]]
         markerStyle = scatterMarkers[i % len(scatterMarkers)]
         ax1.scatter(ptsInCurrCluster[:,0], ptsInCurrCluster[:,1], marker=markerStyle, s=90)
     ax1.scatter(myCentroids[:,0], myCentroids[:,1], marker='+', s=300)
