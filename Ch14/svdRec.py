@@ -52,7 +52,7 @@ def standEst(dataArray, user, simMeas, item):
         if len(overLap) == 0: similarity = 0
         else: similarity = simMeas(dataArray[overLap,item], \
                                    dataArray[overLap,j])
-        print 'the %d and %d similarity is: %f' % (item, j, similarity)
+        print 'standEst:the %d and %d similarity is: %f' % (item, j, similarity)
         simTotal += similarity
         ratSimTotal += similarity * userRating
     if simTotal == 0: return 0
@@ -63,13 +63,13 @@ def svdEst(dataArray, user, simMeas, item):
     simTotal = 0.0; ratSimTotal = 0.0
     U,Sigma,VT = la.svd(dataArray)
     Sig4 = diag(Sigma[:4])
-    xformedItems = dot(dot(dataArray.T, U[:,:4]) * la.inv(Sig4))  #create transformed items
+    xformedItems = dot(dot(dataArray.T, U[:,:4]), la.inv(Sig4))  #create transformed items
     for j in range(n):
         userRating = dataArray[user,j]
         if userRating == 0 or j==item: continue
-        similarity = simMeas(xformedItems[item].T,\
-                             xformedItems[j].T)
-        print 'the %d and %d similarity is: %f' % (item, j, similarity)
+        similarity = simMeas(xformedItems[item],\
+                             xformedItems[j])
+        print 'svdEst:the %d and %d similarity is: %f' % (item, j, similarity)
         simTotal += similarity
         ratSimTotal += similarity * userRating
     if simTotal == 0: return 0
