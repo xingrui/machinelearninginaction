@@ -38,19 +38,19 @@ def setOfWords2Vec(vocabList, inputSet, vocabMap=None):
         else: print "the word: %s is not in my Vocabulary!" % word
     return returnVec
 
-def trainNB0(trainMatrix,trainCategory):
-    numTrainDocs = len(trainMatrix)
-    numWords = len(trainMatrix[0])
+def trainNB0(trainArray,trainCategory):
+    numTrainDocs = len(trainArray)
+    numWords = len(trainArray[0])
     pAbusive = sum(trainCategory)/float(numTrainDocs)
     p0Num = ones(numWords); p1Num = ones(numWords)      #change to ones() 
     p0Denom = 2.0; p1Denom = 2.0                        #change to 2.0
     for i in range(numTrainDocs):
         if trainCategory[i] == 1:
-            p1Num += trainMatrix[i]
-            p1Denom += sum(trainMatrix[i])
+            p1Num += trainArray[i]
+            p1Denom += sum(trainArray[i])
         else:
-            p0Num += trainMatrix[i]
-            p0Denom += sum(trainMatrix[i])
+            p0Num += trainArray[i]
+            p0Denom += sum(trainArray[i])
     p1Vect = log(p1Num/p1Denom)          #change to log()
     p0Vect = log(p0Num/p0Denom)          #change to log()
     return p0Vect,p1Vect,pAbusive
@@ -76,10 +76,10 @@ def testingNB():
     listOPosts,listClasses = loadDataSet()
     myVocabList = createVocabList(listOPosts)
     myVocabMap = changeListToMap(myVocabList)
-    trainMat=[]
+    trainArray=[]
     for postinDoc in listOPosts:
-        trainMat.append(setOfWords2Vec(myVocabList, postinDoc, myVocabMap))
-    p0V,p1V,pAb = trainNB0(array(trainMat),array(listClasses))
+        trainArray.append(setOfWords2Vec(myVocabList, postinDoc, myVocabMap))
+    p0V,p1V,pAb = trainNB0(array(trainArray),array(listClasses))
     testEntry = ['love', 'my', 'dalmation']
     thisDoc = array(setOfWords2Vec(myVocabList, testEntry, myVocabMap))
     print testEntry,'classified as: ',classifyNB(thisDoc,p0V,p1V,pAb)
@@ -109,12 +109,12 @@ def spamTest():
         randIndex = int(random.uniform(0,len(trainingSet)))
         testSet.append(trainingSet[randIndex])
         del(trainingSet[randIndex])  
-    trainMat=[]; trainClasses = []
+    trainArray=[]; trainClasses = []
     vocabMap = changeListToMap(vocabList)
     for docIndex in trainingSet:#train the classifier (get probs) trainNB0
-        trainMat.append(bagOfWords2VecMN(vocabList, docList[docIndex], vocabMap))
+        trainArray.append(bagOfWords2VecMN(vocabList, docList[docIndex], vocabMap))
         trainClasses.append(classList[docIndex])
-    p0V,p1V,pSpam = trainNB0(array(trainMat),array(trainClasses))
+    p0V,p1V,pSpam = trainNB0(array(trainArray),array(trainClasses))
     errorCount = 0
     for docIndex in testSet:        #classify the remaining items
         wordVector = bagOfWords2VecMN(vocabList, docList[docIndex], vocabMap)
@@ -153,12 +153,12 @@ def localWords(feed1,feed0):
         randIndex = int(random.uniform(0,len(trainingSet)))
         testSet.append(trainingSet[randIndex])
         del(trainingSet[randIndex])  
-    trainMat=[]; trainClasses = []
+    trainArray=[]; trainClasses = []
     vocabMap = changeListToMap(vocabList)
     for docIndex in trainingSet:#train the classifier (get probs) trainNB0
-        trainMat.append(bagOfWords2VecMN(vocabList, docList[docIndex], vocabMap))
+        trainArray.append(bagOfWords2VecMN(vocabList, docList[docIndex], vocabMap))
         trainClasses.append(classList[docIndex])
-    p0V,p1V,pSpam = trainNB0(array(trainMat),array(trainClasses))
+    p0V,p1V,pSpam = trainNB0(array(trainArray),array(trainClasses))
     errorCount = 0
     for docIndex in testSet:        #classify the remaining items
         wordVector = bagOfWords2VecMN(vocabList, docList[docIndex], vocabMap)
