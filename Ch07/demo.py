@@ -20,7 +20,19 @@ def testAdaBoost():
     print adaboost.adaClassify([[5,5],[0,0]],classifierArray)
     print adaboost.adaClassify([[3,0]],classifierArray)
 
+def tryTest(function):
+    try:
+        function()
+    except RuntimeError, e:
+        print 'catch RuntimeError[', e ,'] in function ', function.__name__
+
+def testDraw():
+    datArr, labelArr = adaboost.loadDataSet('horseColicTraining2.txt')
+    classifierArray, aggClassEst = adaboost.adaBoostTrainDS(datArr, labelArr, 10, True)
+    adaboost.plotROC(aggClassEst, labelArr)
+
 if __name__ == "__main__":
     testLoadDataSet('horseColicTest2.txt')
     testBuildStump()
     testAdaBoost()
+    tryTest(testDraw)
