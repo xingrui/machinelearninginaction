@@ -15,7 +15,7 @@ def loadDataSet(fileName):      #general function to parse tab -delimited floats
     return dataMat
 
 def distEclud(vecA, vecB):
-    return sqrt(sum(square(vecA - vecB))) #la.norm(vecA-vecB)
+    return sqrt(sum(square(vecA - vecB))) #linalg.norm(vecA-vecB)
 
 def randCent(dataSet, k):
     n = shape(dataSet)[1]

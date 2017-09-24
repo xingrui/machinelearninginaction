@@ -16,11 +16,11 @@ def loadDataSet(fileName):      #general function to parse tab -delimited floats
 
 def standRegres(xArr,yArr):
     xMat = mat(xArr); yMat = mat(yArr).T
-    xTx = xMat.T*xMat
+    xTx = dot(xMat.T, xMat)
     if linalg.det(xTx) == 0.0:
         print "This matrix is singular, cannot do inverse"
         return
-    ws = xTx.I * (xMat.T*yMat)
+    ws = dot(linalg.inv(xTx), dot(xMat.T, yMat))
     return ws
 
 def lwlr(testPoint,xArr,yArr,k=1.0):
@@ -34,7 +34,7 @@ def lwlr(testPoint,xArr,yArr,k=1.0):
     if linalg.det(xTx) == 0.0:
         print "This matrix is singular, cannot do inverse"
         return
-    ws = xTx.I * (xMat.T * (weights * yMat))
+    ws = linalg.inv(xTx) * (xMat.T * (weights * yMat))
     return testPoint * ws
 
 def lwlrTest(testArr,xArr,yArr,k=1.0):  #loops over all the data points and applies lwlr to each one
@@ -61,7 +61,7 @@ def ridgeRegres(xMat,yMat,lam=0.2):
     if linalg.det(denom) == 0.0:
         print "This matrix is singular, cannot do inverse"
         return
-    ws = denom.I * (xMat.T*yMat)
+    ws = linalg.inv(denom) * (xMat.T*yMat)
     return ws
     
 def ridgeTest(xArr,yArr):
@@ -95,7 +95,7 @@ def stageWise(xArr,yArr,eps=0.01,numIt=100):
     #returnMat = zeros((numIt,n)) #testing code remove
     ws = zeros((n,1)); wsTest = ws.copy(); wsMax = ws.copy()
     for i in range(numIt):
-        print ws.T
+        #print ws.T
         lowestError = inf; 
         for j in range(n):
             for sign in [-1,1]:
