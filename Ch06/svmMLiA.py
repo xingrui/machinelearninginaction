@@ -49,8 +49,8 @@ def clipAlpha(aj,H,L):
         aj = L
     return aj
 
-def smoSimple(dataMatIn, classLabels, C, toler, maxIter, trace=False):
-    dataArray = array(dataMatIn); labelArray = array(classLabels)
+def smoSimple(dataArr, classLabels, C, toler, maxIter, trace=False):
+    dataArray = array(dataArr); labelArray = array(classLabels)
     b = 0; m,n = shape(dataArray)
     alphas = zeros(m)
     storeArray = preprocess(dataArray, labelArray)
@@ -98,7 +98,7 @@ def kernelTrans(X, A, kTup): #calc the kernel or transform data to a higher dime
     elif kTup[0]=='rbf':
         delta = X - A #same as delta = X - tile(A, (shape(X)[0],1))
         K = square(delta).sum(axis=1)
-        K = exp(K/(-1*kTup[1]**2)) #divide in NumPy is element-wise not matrix like Matlab
+        K = exp(K/(-1*kTup[1]**2)) #divide in NumPy is element-wise not matrix like matlab
     else: raise NameError('Houston We Have a Problem -- \
     That Kernel is not recognized')
     return K
@@ -171,9 +171,9 @@ def innerL(i, oS):
         return 1
     else: return 0
 
-def smoP(dataMatIn, classLabels, C, toler, maxIter,kTup=('lin', 0), trace=False):    #full Platt SMO
-    oS = optStruct(array(dataMatIn),array(classLabels),C,toler, kTup)
-    storeArray = preprocess(array(dataMatIn), array(classLabels))
+def smoP(dataArr, classLabels, C, toler, maxIter,kTup=('lin', 0), trace=False):    #full Platt SMO
+    oS = optStruct(array(dataArr),array(classLabels),C,toler, kTup)
+    storeArray = preprocess(array(dataArr), array(classLabels))
     iter = 0
     entireSet = True; alphaPairsChanged = 0
     while (iter < maxIter) and ((alphaPairsChanged > 0) or (entireSet)):
@@ -240,15 +240,15 @@ def loadImages(dirName):
     hwLabels = []
     trainingFileList = listdir(dirName)           #load the training set
     m = len(trainingFileList)
-    trainingMat = zeros((m,1024))
+    trainingArray = zeros((m,1024))
     for i in range(m):
         fileNameStr = trainingFileList[i]
         fileStr = fileNameStr.split('.')[0]     #take off .txt
         classNumStr = int(fileStr.split('_')[0])
         if classNumStr == 9: hwLabels.append(-1)
         else: hwLabels.append(1)
-        trainingMat[i] = img2vector('%s/%s' % (dirName, fileNameStr))
-    return trainingMat, hwLabels    
+        trainingArray[i] = img2vector('%s/%s' % (dirName, fileNameStr))
+    return trainingArray, hwLabels    
 
 def testDigits(kTup=('rbf', 10)):
     dataArr,labelArr = loadImages('trainingDigits')

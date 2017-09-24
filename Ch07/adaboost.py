@@ -6,22 +6,22 @@ Adaboost is short for Adaptive Boosting
 from numpy import *
 
 def loadSimpData():
-    datMat = array([[ 1. ,  2.1],
+    dataArray = array([[ 1. ,  2.1],
         [ 2. ,  1.1],
         [ 1.3,  1. ],
         [ 1. ,  1. ],
         [ 2. ,  1. ]])
     classLabels = [1.0, 1.0, -1.0, -1.0, 1.0]
-    return datMat,classLabels
+    return dataArray,classLabels
 
 def loadDataSet(fileName):      #general function to parse tab -delimited floats
-    dataMat = []; labelMat = []
+    dataArr = []; labelArr = []
     fr = open(fileName)
     for line in fr.readlines():
         curLine = line.strip().split('\t')
-        dataMat.append(map(float, curLine[:-1]))
-        labelMat.append(float(curLine[-1]))
-    return dataMat,labelMat
+        dataArr.append(map(float, curLine[:-1]))
+        labelArr.append(float(curLine[-1]))
+    return dataArr,labelArr
 
 def stumpClassify(dataArray,dimen,threshVal,threshIneq):#just classify the data
     retArray = ones(shape(dataArray)[0])

@@ -6,7 +6,7 @@ Created on Dec 13, 2010
 from numpy import *
 import matplotlib
 import matplotlib.pyplot as plt
-datMat = array([[ 1. ,  2.1],
+dataArray = array([[ 1. ,  2.1],
         [ 1.5,  1.6],
         [ 1.3,  1. ],
         [ 1. ,  1. ],
@@ -23,9 +23,9 @@ colors =[]
 
 for i in range(len(classLabels)):
     if classLabels[i]==1.0:
-        xcord1.append(datMat[i,0]), ycord1.append(datMat[i,1])
+        xcord1.append(dataArray[i,0]), ycord1.append(dataArray[i,1])
     else:
-        xcord0.append(datMat[i,0]), ycord0.append(datMat[i,1])
+        xcord0.append(dataArray[i,0]), ycord0.append(dataArray[i,1])
 fig = plt.figure()
 ax = fig.add_subplot(111)       
 ax.scatter(xcord0,ycord0, marker='s', s=90)
