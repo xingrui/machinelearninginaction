@@ -4,9 +4,9 @@ def digitTests():
     kNN.handwritingClassTest()
 
 def autoNormTests():
-    datingDataMat,datingLabels = kNN.file2matrix('datingTestSet2.txt')
-    normMat, ranges, minVals = kNN.autoNorm(datingDataMat)
-    print normMat, ranges, minVals
+    datingDataArray,datingLabels = kNN.file2matrix('datingTestSet2.txt')
+    normArray, ranges, minVals = kNN.autoNorm(datingDataArray)
+    print normArray, ranges, minVals
 
 def main():
     autoNormTests()

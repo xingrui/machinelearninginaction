@@ -17,8 +17,8 @@ from collections import Counter
 from os import listdir
 
 def classify0(inX, dataSet, labels, k):
-    diffMat = dataSet - inX # same as diffMat = dataSet - tile(inX, (dataSet.shape[0],1))
-    sqDistances = square(diffMat).sum(axis=1)
+    diffArray = dataSet - inX # same as diffArray = dataSet - tile(inX, (dataSet.shape[0],1))
+    sqDistances = square(diffArray).sum(axis=1)
     distances = sqrt(sqDistances)
     sortedDistIndicies = distances.argsort()     
     voteIlabelList = [labels[x] for x in sortedDistIndicies[:k]]
@@ -34,18 +34,18 @@ def file2matrix(filename):
     fr = open(filename)
     arrayOLines = fr.readlines()
     numberOfLines = len(arrayOLines)            #get the number of lines in the file
-    returnMat = zeros((numberOfLines,3))        #prepare matrix to return
+    returnArray = zeros((numberOfLines,3))        #prepare matrix to return
     classLabelVector = []                       #prepare labels return   
     index = 0
     for line in arrayOLines:
         listFromLine = line.strip().split('\t')
-        returnMat[index] = listFromLine[0:3]
+        returnArray[index] = listFromLine[0:3]
         if(listFromLine[-1].isdigit()):
             classLabelVector.append(int(listFromLine[-1]))
         else:
             classLabelVector.append(love_dictionary.get(listFromLine[-1]))
         index += 1
-    return returnMat,classLabelVector
+    return returnArray,classLabelVector
 
     
 def autoNorm(dataSet):
@@ -57,13 +57,13 @@ def autoNorm(dataSet):
    
 def datingClassTest():
     hoRatio = 0.10      #hold out 10%
-    datingDataMat,datingLabels = file2matrix('datingTestSet2.txt')       #load data setfrom file
-    normMat, ranges, minVals = autoNorm(datingDataMat)
-    m = normMat.shape[0]
+    datingDataArray,datingLabels = file2matrix('datingTestSet2.txt')       #load data setfrom file
+    normArray, ranges, minVals = autoNorm(datingDataArray)
+    m = normArray.shape[0]
     numTestVecs = int(m*hoRatio)
     errorCount = 0.0
     for i in range(numTestVecs):
-        classifierResult = classify0(normMat[i],normMat[numTestVecs:m],datingLabels[numTestVecs:m],3)
+        classifierResult = classify0(normArray[i],normArray[numTestVecs:m],datingLabels[numTestVecs:m],3)
         print "the classifier came back with: %d, the real answer is: %d" % (classifierResult, datingLabels[i])
         if (classifierResult != datingLabels[i]): errorCount += 1.0
     print "the total error rate is: %f" % (errorCount/float(numTestVecs))
@@ -75,11 +75,11 @@ def classifyPerson():
                                   "percentage of time spent playing video games?"))
     ffMiles = float(raw_input("frequent flier miles earned per year?"))
     iceCream = float(raw_input("liters of ice cream consumed per year?"))
-    datingDataMat, datingLabels = file2matrix('datingTestSet2.txt')
-    normMat, ranges, minVals = autoNorm(datingDataMat)
+    datingDataArray, datingLabels = file2matrix('datingTestSet2.txt')
+    normArray, ranges, minVals = autoNorm(datingDataArray)
     inArr = array([ffMiles, percentTats, iceCream, ])
     classifierResult = classify0((inArr - \
-                                  minVals)/ranges, normMat, datingLabels, 3)
+                                  minVals)/ranges, normArray, datingLabels, 3)
     print "You will probably like this person: %s" % resultList[classifierResult - 1]
     
 def img2vector(filename):
@@ -93,13 +93,13 @@ def handwritingClassTest():
     hwLabels = []
     trainingFileList = listdir('trainingDigits')           #load the training set
     m = len(trainingFileList)
-    trainingMat = zeros((m,1024))
+    trainingArray = zeros((m,1024))
     for i in range(m):
         fileNameStr = trainingFileList[i]
         fileStr = fileNameStr.split('.')[0]     #take off .txt
         classNumStr = int(fileStr.split('_')[0])
         hwLabels.append(classNumStr)
-        trainingMat[i] = img2vector('trainingDigits/%s' % fileNameStr)
+        trainingArray[i] = img2vector('trainingDigits/%s' % fileNameStr)
     testFileList = listdir('testDigits')        #iterate through the test set
     errorCount = 0.0
     mTest = len(testFileList)
@@ -108,7 +108,7 @@ def handwritingClassTest():
         fileStr = fileNameStr.split('.')[0]     #take off .txt
         classNumStr = int(fileStr.split('_')[0])
         vectorUnderTest = img2vector('testDigits/%s' % fileNameStr)
-        classifierResult = classify0(vectorUnderTest, trainingMat, hwLabels, 3)
+        classifierResult = classify0(vectorUnderTest, trainingArray, hwLabels, 3)
         print "the classifier came back with: %d, the real answer is: %d" % (classifierResult, classNumStr)
         if (classifierResult != classNumStr): errorCount += 1.0
     print "\nthe total number of errors is: %d" % errorCount
