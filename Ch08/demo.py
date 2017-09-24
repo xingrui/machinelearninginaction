@@ -63,7 +63,7 @@ def stageWiseTest():
     yArray -= mean(yArray)
     weights = regression.standRegres(xArray, yArray)
     print ridgeWeights[-1]
-    print weights.T
+    print weights
     import matplotlib.pyplot as plt
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -80,7 +80,7 @@ def crossValidationTest():
     lgX1 = array(ones((m,n+1)))
     lgX1[:,1:n+1] = array(lgX)
     ws = regression.standRegres(lgX1,lgY)
-    print ws.T
+    print ws
     regression.crossValidation(lgX,lgY,10)
     regression.ridgeTest(lgX,lgY)
 
