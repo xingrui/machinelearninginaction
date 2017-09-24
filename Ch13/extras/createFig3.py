@@ -44,13 +44,13 @@ ax.scatter(xcord2,ycord2, marker='v', s=50,  c='yellow')
 ax = fig.add_subplot(212)
 myDat = pca.loadDataSet('testSet3.txt')
 lowDDat,reconDat = pca.pca(myDat[:,0:2],1)
-label0Mat = lowDDat[nonzero(myDat[:,2]==0)[0],:2][0] #get the items with label 0
-label1Mat = lowDDat[nonzero(myDat[:,2]==1)[0],:2][0] #get the items with label 1
-label2Mat = lowDDat[nonzero(myDat[:,2]==2)[0],:2][0] #get the items with label 2
-#ax.scatter(label0Mat[:,0],label0Mat[:,1], marker='^', s=90)
-#ax.scatter(label1Mat[:,0],label1Mat[:,1], marker='o', s=50,  c='red')
-#ax.scatter(label2Mat[:,0],label2Mat[:,1], marker='v', s=50,  c='yellow')
-ax.scatter(label0Mat[:,0],zeros(shape(label0Mat)[0]), marker='^', s=90)
-ax.scatter(label1Mat[:,0],zeros(shape(label1Mat)[0]), marker='o', s=50,  c='red')
-ax.scatter(label2Mat[:,0],zeros(shape(label2Mat)[0]), marker='v', s=50,  c='yellow')
+label0Array = lowDDat[nonzero(myDat[:,2]==0)[0],:2][0] #get the items with label 0
+label1Array = lowDDat[nonzero(myDat[:,2]==1)[0],:2][0] #get the items with label 1
+label2Array = lowDDat[nonzero(myDat[:,2]==2)[0],:2][0] #get the items with label 2
+#ax.scatter(label0Array[:,0],label0Array[:,1], marker='^', s=90)
+#ax.scatter(label1Array[:,0],label1Array[:,1], marker='o', s=50,  c='red')
+#ax.scatter(label2Array[:,0],label2Array[:,1], marker='v', s=50,  c='yellow')
+ax.scatter(label0Array[:,0],zeros(shape(label0Array)[0]), marker='^', s=90)
+ax.scatter(label1Array[:,0],zeros(shape(label1Array)[0]), marker='o', s=50,  c='red')
+ax.scatter(label2Array[:,0],zeros(shape(label2Array)[0]), marker='v', s=50,  c='yellow')
 plt.show()

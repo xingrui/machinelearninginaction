@@ -14,14 +14,14 @@ def loadDataSet(fileName, delim='\t'):
 def pca(dataArray, topNfeat=9999999):
     meanVals = mean(dataArray, axis=0)
     meanRemoved = dataArray - meanVals #remove mean
-    covMat = cov(meanRemoved, rowvar=0)
-    eigVals,eigVects = linalg.eig(array(covMat))
+    covArray = cov(meanRemoved, rowvar=0)
+    eigVals,eigVects = linalg.eig(covArray)
     eigValInd = argsort(eigVals)            #sort, sort goes smallest to largest
     eigValInd = eigValInd[:-(topNfeat+1):-1]  #cut off unwanted dimensions
     redEigVects = eigVects[:,eigValInd]       #reorganize eig vects largest to smallest
-    lowDDataMat = dot(meanRemoved, redEigVects)#transform data into new dimensions
-    reconMat = dot(lowDDataMat, redEigVects.T) + meanVals
-    return lowDDataMat, reconMat
+    lowDDataArray = dot(meanRemoved, redEigVects)#transform data into new dimensions
+    reconArray = dot(lowDDataArray, redEigVects.T) + meanVals
+    return lowDDataArray, reconArray
 
 def replaceNanWithMean(): 
     dataArray = loadDataSet('secom.data', ' ')

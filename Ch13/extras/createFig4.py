@@ -8,13 +8,13 @@ import matplotlib
 import matplotlib.pyplot as plt
 import pca
 
-dataMat = pca.replaceNanWithMean()
+dataArray = pca.replaceNanWithMean()
 
 #below is a quick hack copied from pca.pca()
-meanVals = mean(dataMat, axis=0)
-meanRemoved = dataMat - meanVals #remove mean
-covMat = cov(meanRemoved, rowvar=0)
-eigVals,eigVects = linalg.eig(array(covMat))
+meanVals = mean(dataArray, axis=0)
+meanRemoved = dataArray - meanVals #remove mean
+covArray = cov(meanRemoved, rowvar=0)
+eigVals,eigVects = linalg.eig(covArray)
 eigValInd = argsort(eigVals)            #sort, sort goes smallest to largest
 eigValInd = eigValInd[::-1]#reverse
 sortedEigVals = eigVals[eigValInd]

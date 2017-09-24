@@ -1,5 +1,5 @@
 import pca
 print pca.replaceNanWithMean()
-dataMat = pca.loadDataSet('testSet.txt')
-print dataMat
-print pca.pca(dataMat,1)
+dataArray = pca.loadDataSet('testSet.txt')
+print dataArray
+print pca.pca(dataArray,1)
