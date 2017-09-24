@@ -18,9 +18,8 @@ from os import listdir
 
 def classify0(inX, dataSet, labels, k):
     diffMat = dataSet - inX # same as diffMat = dataSet - tile(inX, (dataSet.shape[0],1))
-    sqDiffMat = diffMat**2
-    sqDistances = sqDiffMat.sum(axis=1)
-    distances = sqDistances**0.5
+    sqDistances = square(diffMat).sum(axis=1)
+    distances = sqrt(sqDistances)
     sortedDistIndicies = distances.argsort()     
     voteIlabelList = [labels[x] for x in sortedDistIndicies[:k]]
     return Counter(voteIlabelList).most_common(1)[0][0]

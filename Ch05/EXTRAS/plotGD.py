@@ -19,8 +19,8 @@ delta = 0.025
 x = np.arange(-2.0, 2.0, delta)
 y = np.arange(-2.0, 2.0, delta)
 X, Y = np.meshgrid(x, y)
-Z1 = -((X-1)**2)
-Z2 = -(Y**2)
+Z1 = -square(X-1)
+Z2 = -square(Y)
 #Z1 = mlab.bivariate_normal(X, Y, 1.0, 1.0, 0.0, 0.0)
 #Z2 = mlab.bivariate_normal(X, Y, 1.5, 0.5, 1, 1)
 # difference of Gaussians

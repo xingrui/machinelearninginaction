@@ -43,7 +43,7 @@ def modelLeaf(dataArray):#create linear model and return coeficients
 def modelErr(dataArray):
     ws,X,Y = linearSolve(dataArray)
     yHat = dot(X, ws)
-    return sum(power(Y - yHat,2))
+    return sum(square(Y - yHat))
 
 def chooseBestSplit(dataArray, leafType=regLeaf, errType=regErr, ops=(1,4)):
     tolS = ops[0]; tolN = ops[1]
@@ -102,10 +102,10 @@ def prune(tree, testData):
     #if they are now both leafs, see if we can merge them
     if not isTree(tree['left']) and not isTree(tree['right']):
         lSet, rSet = binSplitDataSet(testData, tree['spInd'], tree['spVal'])
-        errorNoMerge = sum(power(lSet[:,-1] - tree['left'],2)) +\
-            sum(power(rSet[:,-1] - tree['right'],2))
+        errorNoMerge = sum(square(lSet[:,-1] - tree['left'])) +\
+            sum(square(rSet[:,-1] - tree['right']))
         treeMean = (tree['left']+tree['right'])/2.0
-        errorMerge = sum(power(testData[:,-1] - treeMean,2))
+        errorMerge = sum(square(testData[:,-1] - treeMean))
         if errorMerge < errorNoMerge: 
             print "merging"
             return treeMean

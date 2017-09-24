@@ -53,7 +53,7 @@ def lwlrTestPlot(xArr,yArr,k=1.0):  #same thing as lwlrTest except it sorts X fi
     return yHat,xCopy
 
 def rssError(yArr,yHatArr): #yArr and yHatArr both need to be arrays
-    return ((yArr-yHatArr)**2).sum()
+    return sum(square(yArr-yHatArr))
 
 def ridgeRegres(xMat,yMat,lam=0.2):
     xTx = xMat.T*xMat

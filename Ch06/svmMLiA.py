@@ -97,7 +97,7 @@ def kernelTrans(X, A, kTup): #calc the kernel or transform data to a higher dime
     if kTup[0]=='lin': K = dot(X, A)   #linear kernel (M,N) dot (N,) -> (M,)
     elif kTup[0]=='rbf':
         delta = X - A #same as delta = X - tile(A, (shape(X)[0],1))
-        K = (delta**2).sum(axis=1)
+        K = square(delta).sum(axis=1)
         K = exp(K/(-1*kTup[1]**2)) #divide in NumPy is element-wise not matrix like Matlab
     else: raise NameError('Houston We Have a Problem -- \
     That Kernel is not recognized')

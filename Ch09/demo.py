@@ -16,7 +16,7 @@ def regressionTreeInner(filename, subplot, fig):
     ax.scatter(myArray[:,0], myArray[:,1],c='red')
     tree = regTrees.createTree(myArray)
     testDat = arange(min(myArray[:,0]),max(myArray[:,0]),0.01)
-    yHat = regTrees.createForeCast(tree, array(testDat).reshape(-1,1))
+    yHat = regTrees.createForeCast(tree, testDat[:,newaxis])
     ax.plot(testDat, yHat, linewidth = 2.0)
     print tree
 
@@ -29,7 +29,7 @@ def testModelInner(filename, subplot, fig):
     myTree = regTrees.createTree(myArray2, regTrees.modelLeaf, regTrees.modelErr, (1,10))
     print myTree
     testDat = arange(min(myArray2[:,0]),max(myArray2[:,0]),0.01)
-    yHat = regTrees.createForeCast(myTree, array(testDat).reshape(-1,1), regTrees.modelTreeEval)
+    yHat = regTrees.createForeCast(myTree, testDat[:,newaxis], regTrees.modelTreeEval)
     ax.plot(testDat, yHat, linewidth = 2.0)
 
 def testFrame(InnerFunction):
@@ -65,13 +65,13 @@ def testCompare():
     testDat.sort()
     testArray = array(testDat)
     myTree = regTrees.createTree(trainArray, ops=(1,20))
-    yHat = regTrees.createForeCast(myTree, testArray[:,0].reshape(-1,1))
+    yHat = regTrees.createForeCast(myTree, testArray[:,0][:,newaxis])
     ax = fig.add_subplot(111)
     ax.scatter(trainArray[:,0], trainArray[:,1], c='red')
     ax.plot(testArray[:,0], yHat, linewidth = 2.0)
     print corrcoef(yHat, testArray[:,1], rowvar=0)[0,1]
     myTree = regTrees.createTree(trainArray, regTrees.modelLeaf, regTrees.modelErr, (1,20))
-    yHat = regTrees.createForeCast(myTree, testArray[:,0].reshape(-1,1),regTrees.modelTreeEval)
+    yHat = regTrees.createForeCast(myTree, testArray[:,0][:,newaxis],regTrees.modelTreeEval)
     print corrcoef(yHat, testArray[:,1], rowvar=0)[0,1]
     ax.plot(testArray[:,0], yHat, linewidth = 2.0)
     plt.show()
