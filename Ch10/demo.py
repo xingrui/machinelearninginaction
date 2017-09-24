@@ -9,6 +9,12 @@ def testbiKmeans():
 def testMap():
     kMeans.clusterClubs()
 
+def tryTest(function):
+    try:
+        function()
+    except RuntimeError, e:
+        print 'catch RuntimeError[', e ,'] in function ', function.__name__
+
 if __name__ == "__main__":
     testbiKmeans()
-    testMap()
+    tryTest(testMap)

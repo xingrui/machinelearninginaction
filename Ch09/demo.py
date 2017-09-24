@@ -76,14 +76,20 @@ def testCompare():
     ax.plot(testArray[:,0], yHat, linewidth = 2.0)
     plt.show()
 
+def tryTest(function):
+    try:
+        function()
+    except RuntimeError, e:
+        print 'catch RuntimeError[', e ,'] in function ', function.__name__
+
 if __name__ == "__main__":
     testSplitData()
     print 'testSplitData passed'
-    testRegression()
+    tryTest(testRegression)
     print 'testRegression passed'
-    testModel()
+    tryTest(testModel)
     print 'testModel passed'
     testPrune()
     print 'testPrune passed'
-    testCompare()
+    tryTest(testCompare)
     print 'testCompare passed'
