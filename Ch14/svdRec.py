@@ -5,7 +5,6 @@ Created on Mar 8, 2011
 '''
 import operator
 from numpy import *
-from numpy import linalg as la
 
 def loadExData():
     return[[0, 0, 0, 2, 2],
@@ -30,7 +29,7 @@ def loadExData2():
            [1, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0]]
     
 def ecludSim(inA,inB):
-    return 1.0/(1.0 + la.norm(inA - inB))
+    return 1.0/(1.0 + linalg.norm(inA - inB))
 
 def pearsSim(inA,inB):
     if len(inA) < 3 : return 1.0
@@ -38,7 +37,7 @@ def pearsSim(inA,inB):
 
 def cosSim(inA,inB):
     num = vdot(inA,inB)
-    denom = la.norm(inA)*la.norm(inB)
+    denom = linalg.norm(inA)*linalg.norm(inB)
     return 0.5+0.5*(num/denom)
 
 def standEst(dataArray, user, simMeas, item):
@@ -61,9 +60,9 @@ def standEst(dataArray, user, simMeas, item):
 def svdEst(dataArray, user, simMeas, item):
     n = shape(dataArray)[1]
     simTotal = 0.0; ratSimTotal = 0.0
-    U,Sigma,VT = la.svd(dataArray)
+    U,Sigma,VT = linalg.svd(dataArray)
     Sig4 = diag(Sigma[:4])
-    xformedItems = dot(dot(dataArray.T, U[:,:4]), la.inv(Sig4))  #create transformed items
+    xformedItems = dot(dot(dataArray.T, U[:,:4]), linalg.inv(Sig4))  #create transformed items
     for j in range(n):
         userRating = dataArray[user,j]
         if userRating == 0 or j==item: continue
@@ -99,7 +98,7 @@ def imgCompress(numSV=3, thresh=0.8):
     myArray = array(myl)
     print "****original matrix******"
     printArray(myArray, thresh)
-    U,Sigma,VT = la.svd(myArray)
+    U,Sigma,VT = linalg.svd(myArray)
     SigRecon = diag(Sigma[:numSV])
     reconArray = dot(dot(U[:,:numSV],SigRecon), VT[:numSV])
     print "****reconstructed matrix using %d singular values******" % numSV
