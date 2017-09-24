@@ -6,7 +6,7 @@ def normalRegression():
     xArray = array(xArr)
     yArray = array(yArr)
     ws = regression.standRegres(xArray, yArray)
-    yHat = dot(xArray,ws).T.A[0]
+    yHat = dot(xArray,ws)
     print corrcoef(yHat, yArray)
     import matplotlib.pyplot as plt
     fig = plt.figure()
@@ -36,14 +36,14 @@ def abaloneTest():
     paramList = [0.1, 1, 10]
     for param in paramList:
         yHat = regression.lwlrTest(abX[0:99], abX[0:99], abY[0:99],param)
-        print '[lwlrRegress:%.1f] TrainError:' % param, regression.rssError(abY[0:99],yHat.T)
+        print '[lwlrRegress:%.1f] TrainError:' % param, regression.rssError(abY[0:99],yHat)
         yHat = regression.lwlrTest(abX[100:199], abX[0:99], abY[0:99],param)
-        print '[lwlrRegress:%.1f] Test Error:' % param, regression.rssError(abY[100:199],yHat.T)
+        print '[lwlrRegress:%.1f] Test Error:' % param, regression.rssError(abY[100:199],yHat)
     ws = regression.standRegres(abX[0:99], abY[0:99])
-    yHat = mat(abX[0:99]) * ws    
-    print '[standRegress] Train Error:', regression.rssError(abY[0:99],yHat.T.A)
-    yHat = mat(abX[100:199]) * ws    
-    print '[standRegress] Test Error:', regression.rssError(abY[100:199],yHat.T.A)
+    yHat = dot(abX[0:99], ws)
+    print '[standRegress] Train Error:', regression.rssError(abY[0:99],yHat)
+    yHat = dot(abX[100:199], ws) 
+    print '[standRegress] Test Error:', regression.rssError(abY[100:199],yHat)
 
 def ridgeTest():
     abX, abY = regression.loadDataSet('abalone.txt')
@@ -57,12 +57,11 @@ def ridgeTest():
 def stageWiseTest():
     xArr, yArr = regression.loadDataSet('abalone.txt')
     ridgeWeights = regression.stageWise(xArr, yArr, 0.005, 1000)
-    xMat = mat(xArr)
-    yMat = mat(yArr).T
-    xMat = regression.regularize(xMat)
-    yM = mean(yMat, 0)
-    yMat = yMat - yM
-    weights = regression.standRegres(xMat, yMat.T)
+    xArray = array(xArr)
+    yArray = array(yArr)
+    xArray = regression.regularize(xArray)
+    yArray -= mean(yArray)
+    weights = regression.standRegres(xArray, yArray)
     print ridgeWeights[-1]
     print weights.T
     import matplotlib.pyplot as plt

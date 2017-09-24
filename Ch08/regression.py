@@ -6,47 +6,48 @@ Created on Jan 8, 2011
 from numpy import *
 
 def loadDataSet(fileName):      #general function to parse tab -delimited floats
-    dataMat = []; labelMat = []
+    dataArr = []; labelArr = []
     fr = open(fileName)
     for line in fr.readlines():
         curLine = line.strip().split('\t')
-        dataMat.append(map(float, curLine[:-1]))
-        labelMat.append(float(curLine[-1]))
-    return dataMat,labelMat
+        dataArr.append(map(float, curLine[:-1]))
+        labelArr.append(float(curLine[-1]))
+    return dataArr,labelArr
 
 def standRegres(xArr,yArr):
-    xMat = mat(xArr); yMat = mat(yArr).T
-    xTx = dot(xMat.T, xMat)
+    xArray = array(xArr); yArray = array(yArr)
+    xTx = dot(xArray.T, xArray)
     if linalg.det(xTx) == 0.0:
         print "This matrix is singular, cannot do inverse"
         return
-    ws = dot(linalg.inv(xTx), dot(xMat.T, yMat))
+    ws = dot(linalg.inv(xTx), dot(xArray.T, yArray))
     return ws
 
 def lwlr(testPoint,xArr,yArr,k=1.0):
-    xMat = mat(xArr); yMat = mat(yArr).T
-    m = shape(xMat)[0]
-    weights = mat(eye((m)))
+    xArray = array(xArr); yArray = array(yArr)
+    m = shape(xArray)[0]
+    weights = eye(m)
     for j in range(m):                      #next 2 lines create weights matrix
-        diffMat = testPoint - xMat[j]     #
-        weights[j,j] = exp(diffMat*diffMat.T/(-2.0*k**2))
-    xTx = xMat.T * (weights * xMat)
+        diffArray = testPoint - xArray[j]     #
+        weights[j,j] = exp(sum(square(diffArray))/(-2.0*k**2))
+    xTx = dot(xArray.T, dot(weights, xArray))
     if linalg.det(xTx) == 0.0:
         print "This matrix is singular, cannot do inverse"
         return
-    ws = linalg.inv(xTx) * (xMat.T * (weights * yMat))
-    return testPoint * ws
+    ws = dot(linalg.inv(xTx), dot(xArray.T, dot(weights, yArray)))
+    return dot(testPoint, ws)
 
 def lwlrTest(testArr,xArr,yArr,k=1.0):  #loops over all the data points and applies lwlr to each one
-    m = shape(testArr)[0]
+    testArray = array(testArr)
+    m = shape(testArray)[0]
     yHat = zeros(m)
     for i in range(m):
-        yHat[i] = lwlr(testArr[i],xArr,yArr,k)
+        yHat[i] = lwlr(testArray[i],xArr,yArr,k)
     return yHat
 
 def lwlrTestPlot(xArr,yArr,k=1.0):  #same thing as lwlrTest except it sorts X first
     yHat = zeros(shape(yArr))       #easier for plotting
-    xCopy = mat(xArr)
+    xCopy = array(xArr)
     xCopy.sort(0)
     for i in range(shape(xArr)[0]):
         yHat[i] = lwlr(xCopy[i],xArr,yArr,k)
@@ -55,60 +56,53 @@ def lwlrTestPlot(xArr,yArr,k=1.0):  #same thing as lwlrTest except it sorts X fi
 def rssError(yArr,yHatArr): #yArr and yHatArr both need to be arrays
     return sum(square(yArr-yHatArr))
 
-def ridgeRegres(xMat,yMat,lam=0.2):
-    xTx = xMat.T*xMat
-    denom = xTx + eye(shape(xMat)[1])*lam
+def ridgeRegres(xArray,yArray,lam=0.2):
+    xTx = dot(xArray.T, xArray)
+    denom = xTx + eye(shape(xArray)[1])*lam
     if linalg.det(denom) == 0.0:
         print "This matrix is singular, cannot do inverse"
         return
-    ws = linalg.inv(denom) * (xMat.T*yMat)
+    ws = dot(linalg.inv(denom), dot(xArray.T, yArray))
     return ws
     
 def ridgeTest(xArr,yArr):
-    xMat = mat(xArr); yMat=mat(yArr).T
-    yMean = mean(yMat,0)
-    yMat = yMat - yMean     #to eliminate X0 take mean off of Y
-    #regularize X's
-    xMeans = mean(xMat,0)   #calc mean then subtract it off
-    xVar = var(xMat,0)      #calc variance of Xi then divide by it
-    xMat = (xMat - xMeans)/xVar
+    xArray = array(xArr); yArray=array(yArr)
+    yArray -= mean(yArray)
+    xArray = regularize(xArray)
     numTestPts = 30
-    wMat = zeros((numTestPts,shape(xMat)[1]))
+    wArray = zeros((numTestPts,shape(xArray)[1]))
     for i in range(numTestPts):
-        ws = ridgeRegres(xMat,yMat,exp(i-10))
-        wMat[i]=ws.T
-    return wMat
+        ws = ridgeRegres(xArray,yArray,exp(i-10))
+        wArray[i]=ws
+    return wArray
 
-def regularize(xMat):#regularize by columns
-    inMat = xMat.copy()
-    inMeans = mean(inMat,0)   #calc mean then subtract it off
-    inVar = var(inMat,0)      #calc variance of Xi then divide by it
-    inMat = (inMat - inMeans)/inVar
-    return inMat
+def regularize(xArray):#regularize by columns
+    inMeans = mean(xArray,0)   #calc mean then subtract it off
+    inVar = var(xArray,0)      #calc variance of Xi then divide by it
+    return (xArray - inMeans)/inVar
 
 def stageWise(xArr,yArr,eps=0.01,numIt=100):
-    xMat = mat(xArr); yMat=mat(yArr).T
-    yMean = mean(yMat,0)
-    yMat = yMat - yMean     #can also regularize ys but will get smaller coef
-    xMat = regularize(xMat)
-    m,n=shape(xMat)
-    returnMat = zeros((numIt,n)) #testing code remove
-    ws = zeros((n,1)); wsTest = ws.copy(); wsMax = ws.copy()
+    xArray = array(xArr); yArray=array(yArr)
+    yArray = yArray - mean(yArray)
+    xArray = regularize(xArray)
+    m,n=shape(xArray)
+    returnArray = zeros((numIt,n)) #testing code remove
+    ws = zeros(n); wsTest = ws.copy(); wsMax = ws.copy()
     for i in range(numIt):
-        #print ws.T
+        #print ws
         lowestError = inf; 
         for j in range(n):
             for sign in [-1,1]:
                 wsTest = ws.copy()
                 wsTest[j] += eps*sign
-                yTest = xMat*wsTest
-                rssE = rssError(yMat.A,yTest.A)
+                yTest = dot(xArray, wsTest)
+                rssE = rssError(yArray,yTest)
                 if rssE < lowestError:
                     lowestError = rssE
                     wsMax = wsTest
         ws = wsMax.copy()
-        returnMat[i]=ws.T
-    return returnMat
+        returnArray[i]=ws
+    return returnArray
 
 def scrapePage(inFile,outFile,yr,numPce,origPrc):
     from bs4 import BeautifulSoup
@@ -182,7 +176,7 @@ def setDataCollect(retX, retY):
 def crossValidation(xArr,yArr,numVal=10):
     m = len(yArr)                           
     indexList = range(m)
-    errorMat = zeros((numVal,30))#create error mat 30columns numVal rows
+    errorArray = zeros((numVal,30))#create error matrix 30columns numVal rows
     for i in range(numVal):
         trainX=[]; trainY=[]
         testX = []; testY = []
@@ -194,23 +188,23 @@ def crossValidation(xArr,yArr,numVal=10):
             else:
                 testX.append(xArr[indexList[j]])
                 testY.append(yArr[indexList[j]])
-        wMat = ridgeTest(trainX,trainY)    #get 30 weight vectors from ridge
+        wArray= ridgeTest(trainX,trainY)    #get 30 weight vectors from ridge
         for k in range(30):#loop over all of the ridge estimates
-            matTestX = mat(testX); matTrainX=mat(trainX)
-            meanTrain = mean(matTrainX,0)
-            varTrain = var(matTrainX,0)
-            matTestX = (matTestX-meanTrain)/varTrain #regularize test with training params
-            yEst = matTestX * mat(wMat[k]).T + mean(trainY)#test ridge results and store
-            errorMat[i,k]=rssError(yEst.T.A,array(testY))
-            #print errorMat[i,k]
-    meanErrors = mean(errorMat,0)#calc avg performance of the different ridge weight vectors
+            arrayTestX = array(testX); arrayTrainX=array(trainX)
+            meanTrain = mean(arrayTrainX,0)
+            varTrain = var(arrayTrainX,0)
+            arrayTestX = (arrayTestX-meanTrain)/varTrain #regularize test with training params
+            yEst = dot(arrayTestX, wArray[k]) + mean(trainY)#test ridge results and store
+            errorArray[i,k]=rssError(yEst,array(testY))
+            #print errorArray[i,k]
+    meanErrors = mean(errorArray,0)#calc avg performance of the different ridge weight vectors
     minMean = float(min(meanErrors))
-    bestWeights = wMat[nonzero(meanErrors==minMean)]
+    bestWeights = wArray[nonzero(meanErrors==minMean)]
     #can unregularize to get model
     #when we regularized we wrote Xreg = (x-meanX)/var(x)
-    #we can now write in terms of x not Xreg:  x*w/var(x) - meanX/var(x) +meanY
-    xMat = mat(xArr); yMat=mat(yArr).T
-    meanX = mean(xMat,0); varX = var(xMat,0)
+    #we can now write in terms of x not Xreg:  dot(x,w)/var(x) - meanX/var(x) +meanY
+    xArray = array(xArr); yArray=array(yArr)
+    meanX = mean(xArray,0); varX = var(xArray,0)
     unReg = bestWeights/varX
     print "the best model from Ridge Regression is:\n",unReg
-    print "with constant term: ",-1*sum(multiply(meanX,unReg)) + mean(yMat)
+    print "with constant term: ",-1*vdot(meanX,unReg) + mean(yArray)
