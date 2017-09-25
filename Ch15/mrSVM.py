@@ -8,6 +8,7 @@ from mrjob.job import MRJob
 from mrjob.step import MRStep
 
 import pickle
+import os
 from numpy import *
 
 class MRsvm(MRJob):
@@ -15,7 +16,7 @@ class MRsvm(MRJob):
     
     def __init__(self, *args, **kwargs):
         super(MRsvm, self).__init__(*args, **kwargs)
-        self.data = pickle.load(open('C:\Users\Peter\machinelearninginaction\Ch15\svmDat27'))
+        self.data = pickle.load(open(os.environ['PWD'] + '/svmDat27'))
         self.w = 0
         self.eta = 0.69
         self.dataList = []

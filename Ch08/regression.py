@@ -83,7 +83,7 @@ def regularize(xArray):#regularize by columns
 
 def stageWise(xArr,yArr,eps=0.01,numIt=100):
     xArray = array(xArr); yArray=array(yArr)
-    yArray = yArray - mean(yArray)
+    yArray -= mean(yArray)
     xArray = regularize(xArray)
     m,n=shape(xArray)
     returnArray = zeros((numIt,n)) #testing code remove
