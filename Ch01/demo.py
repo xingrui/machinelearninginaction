@@ -136,7 +136,7 @@ def testVdotArray():
     for t in type_list:
         ret = innerTest(dataArray, t)
         res_list[ret].append(t)
-    assert len(res_list[1]) == 0, '!!!!!! vdot of array will have peoblem except_list: %s' % str(res_list[1])
+    assert len(res_list[1]) == 0, '!!!!!! vdot of array will have problem except_list: %s' % str(res_list[1])
 
 # vdot of matrix may have problem !!!!!!
 def testVdotMatrix():
