@@ -23,7 +23,7 @@ def map(key, value):
    # create a tuple with the values to be used by reducer
    # and encode it with base64 to avoid potential trouble with '\t' and '\n' used
    # as default separators in Hadoop Streaming
-   producedvalue = base64.b64encode(pickle.dumps( (E.T*E, E.T*D*e) ))    
+   producedvalue = base64.b64encode(pickle.dumps((dot(E.T, E), dot(dot(E.T, D), e))))    
  
    # note: a single constant key "producedkey" sends to only one reducer
    # somewhat "atypical" due to low degree of parallism on reducer side
@@ -50,7 +50,7 @@ def reduce(key, values, mu=0.1):
  
     # note: omega = result[:-1] and gamma = result[-1]
     # but printing entire vector as output
-    result = sumETE.I*sumETDe
+    result = dot(linalg.inv(sumETE), sumETDe)
     print "%s\t%s" % (key, str(result.tolist()))
 
 if __name__ == "__main__":
