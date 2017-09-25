@@ -19,7 +19,6 @@ def map(key, value):
     # create matrix E and vector e
     e = ones((shape(A)[0],1))
     E = mat(append(A,-e,axis=1)) 
-    print E
  
     # create a tuple with the values to be used by reducer
     # and encode it with base64 to avoid potential trouble with '\t' and '\n' used
