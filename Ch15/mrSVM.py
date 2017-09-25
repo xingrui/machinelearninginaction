@@ -44,11 +44,11 @@ class MRsvm(MRJob):
         else: self.eta=inVals #this is for debug, eta not used in map
         
     def map_fin(self):
-        labelArray = self.data[:,-1]; dataArray=self.data[:,0:-1]#reshape data into dataArray and Y
+        labelVector = self.data[:,-1]; dataArray=self.data[:,0:-1]#reshape data into dataArray and Y
         if self.w == 0: self.w = [0.001]*shape(dataArray)[1] #init w on first iteration
         for index in self.dataList:
             p = vdot(array(self.w), dataArray[index]) #calc p=vdot(w, dataSet[key])
-            if labelArray[index]*p < 1.0:
+            if labelVector[index]*p < 1.0:
                 yield (1, ['u', index])#make sure everything has the same key                           
         yield (1, ['w', self.w])       #so it ends up at the same reducer
         yield (1, ['t', self.t])
@@ -58,15 +58,15 @@ class MRsvm(MRJob):
             if valArr[0]=='u':  self.dataList.append(valArr[1])
             elif valArr[0]=='w': self.w = valArr[1]
             elif valArr[0]=='t':  self.t = valArr[1] 
-        labelArray = self.data[:,-1]; dataArray=self.data[:,0:-1]
-        wArray = array(self.w);   wDelta = zeros(len(self.w))
+        labelVector = self.data[:,-1]; dataArray=self.data[:,0:-1]
+        wVector = array(self.w);   wDelta = zeros(len(self.w))
         for index in self.dataList:
-            wDelta += labelArray[index]*dataArray[index] #wDelta += label*dataSet
+            wDelta += labelVector[index]*dataArray[index] #wDelta += label*dataSet
         eta = 1.0/(2.0*self.t)       #calc new: eta
         #calc new: w = (1.0 - 1/t)*w + (eta/k)*wDelta
-        wArray = (1.0 - 1.0/self.t)*wArray + (eta/self.k)*wDelta
+        wVector = (1.0 - 1.0/self.t)*wVector + (eta/self.k)*wDelta
         for mapperNum in range(1,self.numMappers+1):
-            yield (mapperNum, ['w', wArray.tolist()]) #emit w
+            yield (mapperNum, ['w', wVector.tolist()]) #emit w
             if self.t < self.options.iterations:
                 yield (mapperNum, ['t', self.t+1])#increment T
                 for j in range(self.k/self.numMappers):#emit random ints for mappers iid

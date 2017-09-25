@@ -9,21 +9,21 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import logRegres
 
-def stocGradAscent0(dataArrayay, classLabels):
-    m,n = shape(dataArrayay)
+def stocGradAscent0(dataArray, classLabels):
+    m,n = shape(dataArray)
     alpha = 0.5
     weights = ones(n)   #initialize to all ones
     weightsHistory=zeros((500*m,n))
     for j in range(500):
         for i in range(m):
-            h = logRegres.sigmoid(sum(dataArrayay[i]*weights))
+            h = logRegres.sigmoid(sum(dataArray[i]*weights))
             error = classLabels[i] - h
-            weights = weights + alpha * error * dataArrayay[i]
+            weights = weights + alpha * error * dataArray[i]
             weightsHistory[j*m + i] = weights
     return weightsHistory
 
-def stocGradAscent1(dataArrayay, classLabels):
-    m,n = shape(dataArrayay)
+def stocGradAscent1(dataArray, classLabels):
+    m,n = shape(dataArray)
     alpha = 0.4
     weights = ones(n)   #initialize to all ones
     weightsHistory=zeros((40*m,n))
@@ -32,10 +32,10 @@ def stocGradAscent1(dataArrayay, classLabels):
         for i in range(m):
             alpha = 4/(1.0+j+i)+0.01
             randIndex = int(random.uniform(0,len(dataIndex)))
-            h = logRegres.sigmoid(sum(dataArrayay[randIndex]*weights))
+            h = logRegres.sigmoid(sum(dataArray[randIndex]*weights))
             error = classLabels[randIndex] - h
             #print error
-            weights = weights + alpha * error * dataArrayay[randIndex]
+            weights = weights + alpha * error * dataArray[randIndex]
             weightsHistory[j*m + i] = weights
             del(dataIndex[randIndex])
     print weights

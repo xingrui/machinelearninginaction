@@ -15,26 +15,26 @@ def loadDataSet(fileName):      #general function to parse tab -delimited floats
     return dataArr,labelArr
 
 def standRegres(xArr,yArr):
-    xArray = array(xArr); yArray = array(yArr)
+    xArray = array(xArr); yVector = array(yArr)
     xTx = dot(xArray.T, xArray)
     if linalg.det(xTx) == 0.0:
         print "This matrix is singular, cannot do inverse"
         return
-    ws = dot(linalg.inv(xTx), dot(xArray.T, yArray))
+    ws = dot(linalg.inv(xTx), dot(xArray.T, yVector))
     return ws
 
 def lwlr(testPoint,xArr,yArr,k=1.0):
-    xArray = array(xArr); yArray = array(yArr)
+    xArray = array(xArr); yVector = array(yArr)
     m = shape(xArray)[0]
     weights = eye(m)
     for j in range(m):                      #next 2 lines create weights matrix
-        diffArray = testPoint - xArray[j]     #
-        weights[j,j] = exp(sum(square(diffArray))/(-2.0*k**2))
+        diffVector = testPoint - xArray[j]     #
+        weights[j,j] = exp(sum(square(diffVector))/(-2.0*k**2))
     xTx = dot(xArray.T, dot(weights, xArray))
     if linalg.det(xTx) == 0.0:
         print "This matrix is singular, cannot do inverse"
         return
-    ws = dot(linalg.inv(xTx), dot(xArray.T, dot(weights, yArray)))
+    ws = dot(linalg.inv(xTx), dot(xArray.T, dot(weights, yVector)))
     return dot(testPoint, ws)
 
 def lwlrTest(testArr,xArr,yArr,k=1.0):  #loops over all the data points and applies lwlr to each one
@@ -56,23 +56,23 @@ def lwlrTestPlot(xArr,yArr,k=1.0):  #same thing as lwlrTest except it sorts X fi
 def rssError(yArr,yHatArr): #yArr and yHatArr both need to be arrays
     return sum(square(yArr-yHatArr))
 
-def ridgeRegres(xArray,yArray,lam=0.2):
+def ridgeRegres(xArray,yVector,lam=0.2):
     xTx = dot(xArray.T, xArray)
     denom = xTx + eye(shape(xArray)[1])*lam
     if linalg.det(denom) == 0.0:
         print "This matrix is singular, cannot do inverse"
         return
-    ws = dot(linalg.inv(denom), dot(xArray.T, yArray))
+    ws = dot(linalg.inv(denom), dot(xArray.T, yVector))
     return ws
     
 def ridgeTest(xArr,yArr):
-    xArray = array(xArr); yArray=array(yArr)
-    yArray -= mean(yArray)
+    xArray = array(xArr); yVector=array(yArr)
+    yVector -= mean(yVector)
     xArray = regularize(xArray)
     numTestPts = 30
     wArray = zeros((numTestPts,shape(xArray)[1]))
     for i in range(numTestPts):
-        ws = ridgeRegres(xArray,yArray,exp(i-10))
+        ws = ridgeRegres(xArray,yVector,exp(i-10))
         wArray[i]=ws
     return wArray
 
@@ -82,8 +82,8 @@ def regularize(xArray):#regularize by columns
     return (xArray - inMeans)/inVar
 
 def stageWise(xArr,yArr,eps=0.01,numIt=100):
-    xArray = array(xArr); yArray=array(yArr)
-    yArray -= mean(yArray)
+    xArray = array(xArr); yVector=array(yArr)
+    yVector -= mean(yVector)
     xArray = regularize(xArray)
     m,n=shape(xArray)
     returnArray = zeros((numIt,n)) #testing code remove
@@ -96,7 +96,7 @@ def stageWise(xArr,yArr,eps=0.01,numIt=100):
                 wsTest = ws.copy()
                 wsTest[j] += eps*sign
                 yTest = dot(xArray, wsTest)
-                rssE = rssError(yArray,yTest)
+                rssE = rssError(yVector,yTest)
                 if rssE < lowestError:
                     lowestError = rssE
                     wsMax = wsTest
@@ -203,8 +203,8 @@ def crossValidation(xArr,yArr,numVal=10):
     #can unregularize to get model
     #when we regularized we wrote Xreg = (x-meanX)/var(x)
     #we can now write in terms of x not Xreg:  dot(x,w)/var(x) - meanX/var(x) +meanY
-    xArray = array(xArr); yArray=array(yArr)
+    xArray = array(xArr); yVector=array(yArr)
     meanX = mean(xArray,0); varX = var(xArray,0)
     unReg = bestWeights/varX
     print "the best model from Ridge Regression is:\n",unReg
-    print "with constant term: ",-1*vdot(meanX,unReg) + mean(yArray)
+    print "with constant term: ",-1*vdot(meanX,unReg) + mean(yVector)

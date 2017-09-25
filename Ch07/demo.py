@@ -14,11 +14,11 @@ def testBuildStump():
 
 def testAdaBoost():
     dataArr, classLabels = adaboost.loadSimpData()
-    classifierArray = adaboost.adaBoostTrainDS(dataArr, classLabels, 9)
-    print classifierArray
-    print adaboost.adaClassify([[0,0]],classifierArray)
-    print adaboost.adaClassify([[5,5],[0,0]],classifierArray)
-    print adaboost.adaClassify([[3,0]],classifierArray)
+    classifierArr = adaboost.adaBoostTrainDS(dataArr, classLabels, 9)
+    print classifierArr
+    print adaboost.adaClassify([[0,0]],classifierArr)
+    print adaboost.adaClassify([[5,5],[0,0]],classifierArr)
+    print adaboost.adaClassify([[3,0]],classifierArr)
 
 def tryTest(function):
     try:
@@ -27,8 +27,8 @@ def tryTest(function):
         print 'catch RuntimeError[', e ,'] in function ', function.__name__
 
 def testDraw():
-    datArr, labelArr = adaboost.loadDataSet('horseColicTraining2.txt')
-    classifierArray, aggClassEst = adaboost.adaBoostTrainDS(datArr, labelArr, 10, True)
+    dataArr, labelArr = adaboost.loadDataSet('horseColicTraining2.txt')
+    classifierArr, aggClassEst = adaboost.adaBoostTrainDS(dataArr, labelArr, 10, True)
     adaboost.plotROC(aggClassEst, labelArr)
 
 if __name__ == "__main__":

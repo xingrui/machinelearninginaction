@@ -4,30 +4,30 @@ from numpy import *
 def normalRegression():
     xArr, yArr = regression.loadDataSet('ex0.txt')
     xArray = array(xArr)
-    yArray = array(yArr)
-    ws = regression.standRegres(xArray, yArray)
+    yVector = array(yArr)
+    ws = regression.standRegres(xArray, yVector)
     yHat = dot(xArray,ws)
-    print corrcoef(yHat, yArray)
+    print corrcoef(yHat, yVector)
     import matplotlib.pyplot as plt
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    ax.scatter(xArray[:,1],yArray)
+    ax.scatter(xArray[:,1],yVector)
     ax.plot(xArray[:,1],yHat)
     plt.show()
 
 def lwlrRegression():
     xArr, yArr = regression.loadDataSet('ex0.txt')
     xArray = array(xArr)
-    yArray = array(yArr)
+    yVector = array(yArr)
     srtInd = xArray[:,1].argsort(0)
     xSort = xArray[srtInd]
     import matplotlib.pyplot as plt
     fig = plt.figure()
     param = [1.0, 0.04, 0.01, 0.003]
     for i in xrange(len(param)):
-        yHat = regression.lwlrTest(xArray,xArray, yArray,param[i])
+        yHat = regression.lwlrTest(xArray,xArray, yVector,param[i])
         ax = fig.add_subplot(2,2,i+1)
-        ax.scatter(xArray[:,1],yArray,s=2,c='red')
+        ax.scatter(xArray[:,1],yVector,s=2,c='red')
         ax.plot(xSort[:,1],yHat[srtInd])
     plt.show()
 
@@ -58,10 +58,10 @@ def stageWiseTest():
     xArr, yArr = regression.loadDataSet('abalone.txt')
     ridgeWeights = regression.stageWise(xArr, yArr, 0.005, 1000)
     xArray = array(xArr)
-    yArray = array(yArr)
+    yVector = array(yArr)
     xArray = regression.regularize(xArray)
-    yArray -= mean(yArray)
-    weights = regression.standRegres(xArray, yArray)
+    yVector -= mean(yVector)
+    weights = regression.standRegres(xArray, yVector)
     print ridgeWeights[-1]
     print weights
     import matplotlib.pyplot as plt

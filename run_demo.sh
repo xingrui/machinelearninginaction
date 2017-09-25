@@ -10,3 +10,5 @@ do
         exit 1
     fi
 done
+
+cd Ch15 && sh -x run.sh

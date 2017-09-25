@@ -24,16 +24,16 @@ def loadDataSet(fileName):      #general function to parse tab -delimited floats
     return dataArr,labelArr
 
 def stumpClassify(dataArray,dimen,threshVal,threshIneq):#just classify the data
-    retArray = ones(shape(dataArray)[0])
+    retVector = ones(shape(dataArray)[0])
     if threshIneq == 'lt':
-        retArray[dataArray[:,dimen] <= threshVal] = -1.0
+        retVector[dataArray[:,dimen] <= threshVal] = -1.0
     else:
-        retArray[dataArray[:,dimen] > threshVal] = -1.0
-    return retArray
+        retVector[dataArray[:,dimen] > threshVal] = -1.0
+    return retVector
     
 
 def buildStump(dataArr,classLabels,D):
-    dataArray = array(dataArr); labelArray = array(classLabels)
+    dataArray = array(dataArr); labelVector = array(classLabels)
     m,n = shape(dataArray)
     numSteps = 10.0; bestStump = {}; bestClasEst = zeros(m)
     minError = inf #init error sum, to +infinity
@@ -45,7 +45,7 @@ def buildStump(dataArr,classLabels,D):
                 threshVal = (rangeMin + float(j) * stepSize)
                 predictedVals = stumpClassify(dataArray,i,threshVal,inequal)#call stump classify with i, j, lessThan
                 errArr = ones(m)
-                errArr[predictedVals == labelArray] = 0
+                errArr[predictedVals == labelVector] = 0
                 weightedError = vdot(D,errArr)  #calc total error multiplied by D
                 #print "split: dim %d, thresh %.2f, thresh ineqal: %s, the weighted error is %.3f" % (i, threshVal, inequal, weightedError)
                 if weightedError < minError:

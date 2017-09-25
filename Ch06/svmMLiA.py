@@ -7,9 +7,9 @@ from numpy import *
 from time import sleep
 import sys
 
-def preprocess(dataArray, labelArray):
+def preprocess(dataArray, labelVector):
     storeDataArray = dot(dataArray, dataArray.T) # (M,N) dot (N,M) -> (M,M)
-    storeLabelArray = outer(labelArray, labelArray)
+    storeLabelArray = outer(labelVector, labelVector)
     return multiply(storeDataArray, storeLabelArray)
 
 # goal : maximize this calculateValue result
@@ -50,22 +50,22 @@ def clipAlpha(aj,H,L):
     return aj
 
 def smoSimple(dataArr, classLabels, C, toler, maxIter, trace=False):
-    dataArray = array(dataArr); labelArray = array(classLabels)
+    dataArray = array(dataArr); labelVector = array(classLabels)
     b = 0; m,n = shape(dataArray)
     alphas = zeros(m)
-    storeArray = preprocess(dataArray, labelArray)
+    storeArray = preprocess(dataArray, labelVector)
     iter = 0
     while (iter < maxIter):
         alphaPairsChanged = 0
         for i in range(m):
-            fXi = vdot(multiply(alphas,labelArray), dot(dataArray,dataArray[i])) + b # (M,N) dot (N,) -> (M,)
-            Ei = fXi - float(labelArray[i])#if checks if an example violates KKT conditions
-            if ((labelArray[i]*Ei < -toler) and (alphas[i] < C)) or ((labelArray[i]*Ei > toler) and (alphas[i] > 0)):
+            fXi = vdot(multiply(alphas,labelVector), dot(dataArray,dataArray[i])) + b # (M,N) dot (N,) -> (M,)
+            Ei = fXi - float(labelVector[i])#if checks if an example violates KKT conditions
+            if ((labelVector[i]*Ei < -toler) and (alphas[i] < C)) or ((labelVector[i]*Ei > toler) and (alphas[i] > 0)):
                 j = selectJrand(i,m)
-                fXj = vdot(multiply(alphas,labelArray), dot(dataArray,dataArray[j])) + b # (M,N) dot (N,) -> (M,)
-                Ej = fXj - float(labelArray[j])
+                fXj = vdot(multiply(alphas,labelVector), dot(dataArray,dataArray[j])) + b # (M,N) dot (N,) -> (M,)
+                Ej = fXj - float(labelVector[j])
                 alphaIold = alphas[i]; alphaJold = alphas[j];
-                if (labelArray[i] != labelArray[j]):
+                if (labelVector[i] != labelVector[j]):
                     L = max(0, alphas[j] - alphas[i])
                     H = min(C, C + alphas[j] - alphas[i])
                 else:
@@ -74,13 +74,13 @@ def smoSimple(dataArr, classLabels, C, toler, maxIter, trace=False):
                 if L==H: print "L==H"; continue
                 eta = 2.0 * vdot(dataArray[i], dataArray[j]) - vdot(dataArray[i], dataArray[i]) - vdot(dataArray[j], dataArray[j])
                 if eta >= 0: print "eta>=0"; continue
-                alphas[j] -= labelArray[j]*(Ei - Ej)/eta
+                alphas[j] -= labelVector[j]*(Ei - Ej)/eta
                 alphas[j] = clipAlpha(alphas[j],H,L)
                 if (abs(alphas[j] - alphaJold) < 0.00001): print "j not moving enough"; continue
-                alphas[i] += labelArray[j]*labelArray[i]*(alphaJold - alphas[j])#update i by the same amount as j
+                alphas[i] += labelVector[j]*labelVector[i]*(alphaJold - alphas[j])#update i by the same amount as j
                                                                         #the update is in the oppostie direction
-                b1 = b - Ei- labelArray[i]*(alphas[i]-alphaIold)*vdot(dataArray[i], dataArray[i]) - labelArray[j]*(alphas[j]-alphaJold)*vdot(dataArray[i], dataArray[j])
-                b2 = b - Ej- labelArray[i]*(alphas[i]-alphaIold)*vdot(dataArray[i], dataArray[j]) - labelArray[j]*(alphas[j]-alphaJold)*vdot(dataArray[j], dataArray[j])
+                b1 = b - Ei- labelVector[i]*(alphas[i]-alphaIold)*vdot(dataArray[i], dataArray[i]) - labelVector[j]*(alphas[j]-alphaJold)*vdot(dataArray[i], dataArray[j])
+                b2 = b - Ej- labelVector[i]*(alphas[i]-alphaIold)*vdot(dataArray[i], dataArray[j]) - labelVector[j]*(alphas[j]-alphaJold)*vdot(dataArray[j], dataArray[j])
                 if (0 < alphas[i]) and (C > alphas[i]): b = b1
                 elif (0 < alphas[j]) and (C > alphas[j]): b = b2
                 else: b = (b1 + b2)/2.0
@@ -104,9 +104,9 @@ def kernelTrans(X, A, kTup): #calc the kernel or transform data to a higher dime
     return K
 
 class optStruct:
-    def __init__(self, dataArray, labelArray, C, toler, kTup):  # Initialize the structure with the parameters 
+    def __init__(self, dataArray, labelVector, C, toler, kTup):  # Initialize the structure with the parameters 
         self.X = dataArray
-        self.labelArray = labelArray
+        self.labelVector = labelVector
         self.C = C
         self.tol = toler
         self.m = shape(dataArray)[0]
@@ -118,8 +118,8 @@ class optStruct:
             self.K[:,i] = kernelTrans(self.X, self.X[i], kTup)
         
 def calcEk(oS, k):
-    fXk = vdot(multiply(oS.alphas,oS.labelArray), oS.K[:,k]) + oS.b
-    Ek = fXk - float(oS.labelArray[k])
+    fXk = vdot(multiply(oS.alphas,oS.labelVector), oS.K[:,k]) + oS.b
+    Ek = fXk - float(oS.labelVector[k])
     return Ek
         
 def selectJ(i, oS, Ei):         #this is the second choice -heurstic, and calcs Ej
@@ -145,10 +145,10 @@ def updateEk(oS, k):#after any alpha has changed update the new value in the cac
         
 def innerL(i, oS):
     Ei = calcEk(oS, i)
-    if ((oS.labelArray[i]*Ei < -oS.tol) and (oS.alphas[i] < oS.C)) or ((oS.labelArray[i]*Ei > oS.tol) and (oS.alphas[i] > 0)):
+    if ((oS.labelVector[i]*Ei < -oS.tol) and (oS.alphas[i] < oS.C)) or ((oS.labelVector[i]*Ei > oS.tol) and (oS.alphas[i] > 0)):
         j,Ej = selectJ(i, oS, Ei) #this has been changed from selectJrand
         alphaIold = oS.alphas[i]; alphaJold = oS.alphas[j];
-        if (oS.labelArray[i] != oS.labelArray[j]):
+        if (oS.labelVector[i] != oS.labelVector[j]):
             L = max(0, oS.alphas[j] - oS.alphas[i])
             H = min(oS.C, oS.C + oS.alphas[j] - oS.alphas[i])
         else:
@@ -157,14 +157,14 @@ def innerL(i, oS):
         if L==H: print "L==H"; return 0
         eta = 2.0 * oS.K[i,j] - oS.K[i,i] - oS.K[j,j] #changed for kernel
         if eta >= 0: print "eta>=0"; return 0
-        oS.alphas[j] -= oS.labelArray[j]*(Ei - Ej)/eta
+        oS.alphas[j] -= oS.labelVector[j]*(Ei - Ej)/eta
         oS.alphas[j] = clipAlpha(oS.alphas[j],H,L)
         updateEk(oS, j) #added this for the Ecache
         if (abs(oS.alphas[j] - alphaJold) < 0.00001): print "j not moving enough"; return 0
-        oS.alphas[i] += oS.labelArray[j]*oS.labelArray[i]*(alphaJold - oS.alphas[j])#update i by the same amount as j
+        oS.alphas[i] += oS.labelVector[j]*oS.labelVector[i]*(alphaJold - oS.alphas[j])#update i by the same amount as j
         updateEk(oS, i) #added this for the Ecache                    #the update is in the oppostie direction
-        b1 = oS.b - Ei- oS.labelArray[i]*(oS.alphas[i]-alphaIold)*oS.K[i,i] - oS.labelArray[j]*(oS.alphas[j]-alphaJold)*oS.K[i,j]
-        b2 = oS.b - Ej- oS.labelArray[i]*(oS.alphas[i]-alphaIold)*oS.K[i,j]- oS.labelArray[j]*(oS.alphas[j]-alphaJold)*oS.K[j,j]
+        b1 = oS.b - Ei- oS.labelVector[i]*(oS.alphas[i]-alphaIold)*oS.K[i,i] - oS.labelVector[j]*(oS.alphas[j]-alphaJold)*oS.K[i,j]
+        b2 = oS.b - Ej- oS.labelVector[i]*(oS.alphas[i]-alphaIold)*oS.K[i,j]- oS.labelVector[j]*(oS.alphas[j]-alphaJold)*oS.K[j,j]
         if (0 < oS.alphas[i]) and (oS.C > oS.alphas[i]): oS.b = b1
         elif (0 < oS.alphas[j]) and (oS.C > oS.alphas[j]): oS.b = b2
         else: oS.b = (b1 + b2)/2.0
@@ -200,16 +200,16 @@ def smoP(dataArr, classLabels, C, toler, maxIter,kTup=('lin', 0), trace=False): 
     return oS.b,oS.alphas
 
 def calcWs(alphas,dataArr,classLabels):
-    X = array(dataArr); labelArray = array(classLabels)
-    return dot(multiply(alphas, labelArray), X) # (M,) dot (M,N) -> (N,)
+    X = array(dataArr); labelVector = array(classLabels)
+    return dot(multiply(alphas, labelVector), X) # (M,) dot (M,N) -> (N,)
 
 def testRbf(k1=1.3):
     dataArr,labelArr = loadDataSet('testSetRBF.txt')
     b,alphas = smoP(dataArr, labelArr, 200, 0.0001, 10000, ('rbf', k1)) #C=200 important
-    dataArray=array(dataArr); labelArray = array(labelArr)
+    dataArray=array(dataArr); labelVector = array(labelArr)
     svInd=nonzero(alphas>0)[0]
     sVs=dataArray[svInd] #get matrix of only support vectors
-    labelSV = labelArray[svInd];
+    labelSV = labelVector[svInd];
     print "there are %d Support Vectors" % shape(sVs)[0]
     m,n = shape(dataArray)
     errorCount = 0
@@ -253,10 +253,10 @@ def loadImages(dirName):
 def testDigits(kTup=('rbf', 10)):
     dataArr,labelArr = loadImages('trainingDigits')
     b,alphas = smoP(dataArr, labelArr, 200, 0.0001, 10000, kTup)
-    dataArray=array(dataArr); labelArray=array(labelArr)
+    dataArray=array(dataArr); labelVector=array(labelArr)
     svInd=nonzero(alphas>0)[0]
     sVs=dataArray[svInd] 
-    labelSV = labelArray[svInd];
+    labelSV = labelVector[svInd];
     print "there are %d Support Vectors" % shape(sVs)[0]
     m,n = shape(dataArray)
     errorCount = 0
