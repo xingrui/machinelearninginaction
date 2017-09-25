@@ -53,7 +53,7 @@ def testShape():
 
 def testSetOperation():
     testArray = array([100,200,100,200])
-    testMat = mat(testArray)
+    testMat = matrix(testArray)
     print set(testArray)
     assert len(set(testArray)) == 2
     print set(testMat.T)
@@ -69,7 +69,7 @@ def testRemoveCertainRow():
     assert (testArray[subIndex] == array([[1,200],[2,200]])).all()
     # following code is very ugly and confusing !!!!!!
     # matrix is strongly not recommended when using numpy !!!!!!
-    testMat = mat(testArray)
+    testMat = matrix(testArray)
     nonzeroIndex = nonzero(testMat[:,1]>150)
     assert len(nonzeroIndex) == 2
     subIndex = nonzeroIndex[0]
@@ -77,6 +77,55 @@ def testRemoveCertainRow():
     uglyMat = testMat[subIndex]
     assert uglyMat.shape == (1,2,2) # WHAT THE FUCK !!!!!!
     assert uglyMat[0].shape == (2,2)
+
+# outer and dot function
+def testUsefulFunctions():
+    b = array([1,2,3])
+    print outer(b, b)
+    # outer function is the simplest way to show outer product of two vector.
+    assert (outer(b,b) == multiply(b[:,newaxis],b[newaxis,:])).all()
+    assert (outer(b,b) == dot(b[:,newaxis],b[newaxis,:])).all()
+    assert (outer(b,b) == multiply(reshape(b,(-1,1)),reshape(b,(1,-1)))).all()
+    assert (outer(b,b) == dot(reshape(b,(-1,1)),reshape(b,(1,-1)))).all()
+    # the 1-d array will changed as use in dot function.
+    array_dot = dot(array([[1,2,3],[4,5,7]]), array([1,2,3]))
+    assert array_dot.shape == (2,)
+    assert (array_dot == array([14,35])).all()
+    array_dot = dot(array([1,2]),array([[1,2,3],[4,5,7]]))
+    assert array_dot.shape == (3,)
+    assert (array_dot == array([9,12,17])).all()
+
+def innerTest(dataArray, t):
+    dataArray = dataArray.astype(t)
+    try:
+        res1 = vdot(dataArray, dataArray)
+        res2 = vdot(dataArray[0], dataArray[1])
+        assert res1 == sum(multiply(dataArray, dataArray))
+        assert res2 == sum(multiply(dataArray[0], dataArray[1]))
+        return 0
+    except ValueError,e:
+        return 1
+
+def testVdotArray():
+    dataArray = 2 * ones((5,5))
+    type_list = ['int', 'int8', 'int16', 'int32', 'int64', 'float', 'float16', 'float32','float64','float128', 'complex', 'complex64', 'complex128', 'complex256']
+    res_list = [[],[]]
+    for t in type_list:
+        ret = innerTest(dataArray, t)
+        res_list[ret].append(t)
+    assert len(res_list[1]) == 0, '!!!!!! vdot of array will have peoblem except_list: %s' % str(res_list[1])
+
+# vdot of matrix may have problem !!!!!!
+def testVdotMatrix():
+    dataArray = 2 * ones((5,5))
+    dataMat = matrix(dataArray)
+    type_list = ['int', 'int8', 'int16', 'int32', 'int64', 'float', 'float16', 'float32','float64','float128', 'complex', 'complex64', 'complex128', 'complex256']
+    res_list = [[],[]]
+    for t in type_list:
+        ret = innerTest(dataMat, t)
+        res_list[ret].append(t)
+    print 'passed_list:', res_list[0]
+    assert len(res_list[1]) == 0, '!!!!!! vdot of matrix will have peoblem except_list: %s' % str(res_list[1])
 
 def tryTest(function):
     print function.__name__, 'begin.'
@@ -92,6 +141,9 @@ def main():
     tryTest(testShape)
     tryTest(testSetOperation)
     tryTest(testRemoveCertainRow)
+    tryTest(testUsefulFunctions)
+    tryTest(testVdotArray)
+    tryTest(testVdotMatrix)
 
 if __name__ == "__main__":
     main()
