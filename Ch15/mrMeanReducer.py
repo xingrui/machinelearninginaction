@@ -4,7 +4,7 @@ Created on Feb 21, 2011
 @author: Peter
 '''
 import sys
-from numpy import mat, mean 
+from numpy import mean 
 
 def read_input(file):
     for line in file:

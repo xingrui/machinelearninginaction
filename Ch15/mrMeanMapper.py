@@ -6,7 +6,7 @@ mrMeanMapper.py
 @author: Peter Harrington
 '''
 import sys
-from numpy import mat, mean, square
+from numpy import array, mean, square
 
 def read_input(file):
     for line in file:
@@ -15,7 +15,7 @@ def read_input(file):
 input = read_input(sys.stdin)#creates a list of input lines
 input = [float(line) for line in input] #overwrite with floats
 numInputs = len(input)
-input = mat(input)
+input = array(input)
 sqInput = square(input)
 
 #output size, mean, mean(square values)

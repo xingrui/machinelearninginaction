@@ -5,6 +5,7 @@ Using mrjob to automate job flow
 @author: Peter
 '''
 from mrjob.job import MRJob
+from mrjob.step import MRStep
 
 import pickle
 from numpy import *
@@ -71,7 +72,7 @@ class MRsvm(MRJob):
                     yield (mapperNum, ['x', random.randint(shape(self.data)[0]) ])
         
     def steps(self):
-        return ([self.mr(mapper=self.map, reducer=self.reduce, 
+        return ([MRStep(mapper=self.map, reducer=self.reduce, 
                          mapper_final=self.map_fin)]*self.options.iterations)
 
 if __name__ == '__main__':
