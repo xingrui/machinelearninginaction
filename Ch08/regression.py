@@ -35,7 +35,7 @@ def lwlr(testPoint,xArr,yArr,k=1.0):
         print "This matrix is singular, cannot do inverse"
         return
     ws = dot(linalg.inv(xTx), dot(xArray.T, dot(weights, yVector)))
-    return dot(testPoint, ws)
+    return vdot(testPoint, ws)
 
 def lwlrTest(testArr,xArr,yArr,k=1.0):  #loops over all the data points and applies lwlr to each one
     testArray = array(testArr)
