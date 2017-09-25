@@ -79,7 +79,8 @@ def testSetOperation():
     print set(testArray)
     assert len(set(testArray)) == 2
     print set(testMat.T)
-    assert len(set(testMat.T)) == 4 # not 2 !!!!!!
+    setLenMat = len(set(testMat.T))
+    assert setLenMat == 2, 'len(set(matrix(%s))) is [%d] not 2 !!!!!!' % (testMat.T, setLenMat)
 
 def testRemoveCertainRow():
     # following code is clear.
@@ -155,8 +156,9 @@ def tryTest(function):
         function()
         print function.__name__, 'passed.'
     except AssertionError, e:
+        print '\033[1;31;40m'
         print 'CATCH EXCEPTION:', e
-        exit(0)
+        print '\033[0m'
 
 def main():
     tryTest(testBroadcast)
