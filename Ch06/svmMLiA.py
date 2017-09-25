@@ -18,7 +18,7 @@ def preprocess(dataArray, labelArray):
 # it shows that the result is increasing, but the distance is not always increasing.
 def calculateValue(alphas, storeArray):
     alphasArray = outer(alphas, alphas)
-    wTw = sum(multiply(alphasArray, storeArray))
+    wTw = vdot(alphasArray, storeArray)
     return sum(alphas) - 0.5 * wTw, 1 / sqrt(wTw)
 
 # print value to stderr for differentiate from other logs.
