@@ -4,6 +4,8 @@ Created on Feb 25, 2011
 @author: Peter
 '''
 import numpy
+import base64
+import pickle
 
 def map(key, value):
    # input key= class for one training example, e.g. "-1.0"
@@ -21,11 +23,11 @@ def map(key, value):
    # create a tuple with the values to be used by reducer
    # and encode it with base64 to avoid potential trouble with '\t' and '\n' used
    # as default separators in Hadoop Streaming
-   producedvalue = base64.b64encode(pickle.dumps( (E.T*E, E.T*D*e) )    
+   producedvalue = base64.b64encode(pickle.dumps( (E.T*E, E.T*D*e) ))    
  
    # note: a single constant key "producedkey" sends to only one reducer
    # somewhat "atypical" due to low degree of parallism on reducer side
-   print "producedkey\t%s" % (producedvalue)
+   return "producedkey\t%s" % (producedvalue)
    
 def reduce(key, values, mu=0.1):
   sumETE = None
@@ -50,3 +52,8 @@ def reduce(key, values, mu=0.1):
     # but printing entire vector as output
     result = sumETE.I*sumETDe
     print "%s\t%s" % (key, str(result.tolist()))
+
+if __name__ == "__main__":
+    output = map("-1.0", "3.0, 7.0, 2.0").split("\t")
+    key, values = output
+    reduce(key, [output])
