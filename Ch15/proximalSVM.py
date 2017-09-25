@@ -8,26 +8,27 @@ import base64
 import pickle
 
 def map(key, value):
-   # input key= class for one training example, e.g. "-1.0"
-   classes = [float(item) for item in key.split(",")]   # e.g. [-1.0]
-   D = diag(classes)
+    # input key= class for one training example, e.g. "-1.0"
+    classes = [float(item) for item in key.split(",")]   # e.g. [-1.0]
+    D = diag(classes)
  
-   # input value = feature vector for one training example, e.g. "3.0, 7.0, 2.0"
-   featurematrix = [float(item) for item in value.split(",")]
-   A = mat(featurematrix)
+    # input value = feature vector for one training example, e.g. "3.0, 7.0, 2.0"
+    featurematrix = [float(item) for item in value.split(",")]
+    A = mat(featurematrix)
  
-   # create matrix E and vector e
-   e = mat(ones(len(A)).reshape(len(A),1))
-   E = mat(append(A,-e,axis=1)) 
+    # create matrix E and vector e
+    e = ones((shape(A)[0],1))
+    E = mat(append(A,-e,axis=1)) 
+    print E
  
-   # create a tuple with the values to be used by reducer
-   # and encode it with base64 to avoid potential trouble with '\t' and '\n' used
-   # as default separators in Hadoop Streaming
-   producedvalue = base64.b64encode(pickle.dumps((dot(E.T, E), dot(dot(E.T, D), e))))    
+    # create a tuple with the values to be used by reducer
+    # and encode it with base64 to avoid potential trouble with '\t' and '\n' used
+    # as default separators in Hadoop Streaming
+    producedvalue = base64.b64encode(pickle.dumps((dot(E.T, E), dot(dot(E.T, D), e))))    
  
-   # note: a single constant key "producedkey" sends to only one reducer
-   # somewhat "atypical" due to low degree of parallism on reducer side
-   return "producedkey\t%s" % (producedvalue)
+    # note: a single constant key "producedkey" sends to only one reducer
+    # somewhat "atypical" due to low degree of parallism on reducer side
+    return "producedkey\t%s" % (producedvalue)
    
 def reduce(key, values, mu=0.1):
   sumETE = None
