@@ -148,7 +148,7 @@ def testVdotMatrix():
         ret = innerTest(dataMat, t)
         res_list[ret].append(t)
     print 'passed_list:', res_list[0]
-    assert len(res_list[1]) == 0, '!!!!!! vdot of matrix will have peoblem except_list: %s' % str(res_list[1])
+    assert len(res_list[1]) == 0, '!!!!!! vdot of matrix will have problem except_list: %s' % str(res_list[1])
 
 def tryTest(function):
     print function.__name__, 'begin.'
