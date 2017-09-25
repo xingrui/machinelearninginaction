@@ -1,5 +1,27 @@
 from numpy import *
 
+# When operating on two arrays, NumPy compares their shapes element-wise.
+# It starts with the trailing dimensions, and works its way forward.
+# Two dimensions are compatible when
+# 1.they are equal, or
+# 2.one of them is 1
+def testBroadcast():
+    dataArray = array(([1,2,3],[6,7,8]))
+    minusResult = dataArray - array([2,0,0])
+    minusResultTile = dataArray - tile(array([2,0,0]), (2,1))
+    assert (minusResult == minusResultTile).all()
+    a = array([1,2,3,4])
+    b = array([1,2,3])
+    l = a[:,newaxis]
+    r = b[newaxis,:]
+    print l.shape, r.shape
+    assert l.shape == (4,1)
+    assert r.shape == (1,3)
+    assert (l+r).shape == (4,3)
+    assert (l-r).shape == (4,3)
+    assert multiply(l,r).shape == (4,3)
+    assert (l/r).shape == (4,3)
+
 def testSquare():
     testArray = array([[1,1],[1,1]])
     testMat = matrix(testArray)
@@ -126,28 +148,6 @@ def testVdotMatrix():
         res_list[ret].append(t)
     print 'passed_list:', res_list[0]
     assert len(res_list[1]) == 0, '!!!!!! vdot of matrix will have peoblem except_list: %s' % str(res_list[1])
-
-# When operating on two arrays, NumPy compares their shapes element-wise.
-# It starts with the trailing dimensions, and works its way forward.
-# Two dimensions are compatible when
-# 1.they are equal, or
-# 2.one of them is 1
-def testBroadcast():
-    dataArray = array(([1,2,3],[6,7,8]))
-    minusResult = dataArray - array([2,0,0])
-    minusResultTile = dataArray - tile(array([2,0,0]), (2,1))
-    assert (minusResult == minusResultTile).all()
-    a = array([1,2,3,4])
-    b = array([1,2,3])
-    l = a[:,newaxis]
-    r = b[newaxis,:]
-    print l.shape, r.shape
-    assert l.shape == (4,1)
-    assert r.shape == (1,3)
-    assert (l+r).shape == (4,3)
-    assert (l-r).shape == (4,3)
-    assert multiply(l,r).shape == (4,3)
-    assert (l/r).shape == (4,3)
 
 def tryTest(function):
     print function.__name__, 'begin.'
