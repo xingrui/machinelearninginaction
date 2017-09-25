@@ -30,23 +30,23 @@ def map(key, value):
     return "producedkey\t%s" % (producedvalue)
    
 def reduce(key, values, mu=0.1):
-  sumETE = None
-  sumETDe = None
+    sumETE = None
+    sumETDe = None
  
-  # key isn't used, so ignoring it with _ (underscore).
-  for _, value in values:
-    # unpickle values
-    ETE, ETDe = pickle.loads(base64.b64decode(value))
-    if sumETE == None:
-      # create the I/mu with correct dimensions
-      sumETE = mat(eye(ETE.shape[1])/mu)
-    sumETE += ETE
+    # key isn't used, so ignoring it with _ (underscore).
+    for _, value in values:
+        # unpickle values
+        ETE, ETDe = pickle.loads(base64.b64decode(value))
+        if sumETE == None:
+            # create the I/mu with correct dimensions
+            sumETE = mat(eye(ETE.shape[1])/mu)
+        sumETE += ETE
  
-    if sumETDe == None:
-      # create sumETDe with correct dimensions
-      sumETDe = ETDe
-    else:
-      sumETDe += ETDe
+        if sumETDe == None:
+            # create sumETDe with correct dimensions
+            sumETDe = ETDe
+        else:
+            sumETDe += ETDe
  
     # note: omega = result[:-1] and gamma = result[-1]
     # but printing entire vector as output
@@ -54,6 +54,9 @@ def reduce(key, values, mu=0.1):
     print "%s\t%s" % (key, str(result.tolist()))
 
 if __name__ == "__main__":
-    output = map("-1.0", "3.0, 7.0, 2.0").split("\t")
-    key, values = output
-    reduce(key, [output])
+    output1 = map("1.0", "-10.0, 0, 0").split("\t")
+    output2 = map("1.0", "0, 0, 0").split("\t")
+    output3 = map("-1.0", "6, 8, 0").split("\t")
+    output4 = map("-1.0", "20, 0, 0").split("\t")
+    key, values = output1
+    reduce(key, [output1, output2, output3, output4])
