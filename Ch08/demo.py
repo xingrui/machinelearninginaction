@@ -56,18 +56,18 @@ def ridgeTest():
 
 def stageWiseTest():
     xArr, yArr = regression.loadDataSet('abalone.txt')
-    ridgeWeights = regression.stageWise(xArr, yArr, 0.005, 1000)
+    stageWiseWeights = regression.stageWise(xArr, yArr, 0.005, 1000)
     xArray = array(xArr)
     yVector = array(yArr)
     xArray = regression.regularize(xArray)
     yVector -= mean(yVector)
-    weights = regression.standRegres(xArray, yVector)
-    print ridgeWeights[-1]
-    print weights
+    standWeights = regression.standRegres(xArray, yVector)
+    print stageWiseWeights[-1]
+    print standWeights
     import matplotlib.pyplot as plt
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    ax.plot(ridgeWeights)
+    ax.plot(stageWiseWeights)
     plt.show()
 
 #should only called once. (should not run again because lego.txt is in git now).
@@ -91,12 +91,12 @@ def tryTest(function):
         print 'catch RuntimeError[', e ,'] in function ', function.__name__
 
 def main():
-    tryTest(crossValidationTest)
-    tryTest(stageWiseTest)
-    tryTest(ridgeTest)
     tryTest(normalRegression)
     tryTest(lwlrRegression)
     abaloneTest()
+    tryTest(ridgeTest)
+    tryTest(stageWiseTest)
+    tryTest(crossValidationTest)
 
 if __name__ == "__main__":
     main()
