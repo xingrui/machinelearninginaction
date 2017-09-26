@@ -35,7 +35,7 @@ def gradAscent(dataArrIn, classLabels, trace=False):
     for k in range(maxCycles):              #heavy on matrix operations
         hVector = sigmoid(dot(dataArray,weightsVector))     #matrix mult (M,N) dot (N,) -> (M,)
         errorVector = (labelVector - hVector)              #vector subtraction
-        weightsVector = weightsVector + alpha * dot(dataArray.T, errorVector) #matrix mult (N,M) dot (M,) -> (N,)
+        weightsVector += alpha * dot(dataArray.T, errorVector) #matrix mult (N,M) dot (M,) -> (N,)
         # print total cost for each step. and we will see that the cost is decreasing.
         if trace:print calculateCost(labelVector, hVector)
     return weightsVector
@@ -69,7 +69,7 @@ def stocGradAscent0(dataArray, classLabels):
     for i in range(m):
         h = sigmoid(vdot(dataArray[i],weightsVector))
         error = classLabels[i] - h
-        weightsVector = weightsVector + alpha * error * dataArray[i]
+        weightsVector += alpha * error * dataArray[i]
     return weightsVector
 
 def stocGradAscent1(dataArray, classLabels, numIter=150):
@@ -82,7 +82,7 @@ def stocGradAscent1(dataArray, classLabels, numIter=150):
             randIndex = int(random.uniform(0,len(dataIndex)))#go to 0 because of the constant
             h = sigmoid(vdot(dataArray[randIndex],weightsVector))
             error = classLabels[randIndex] - h
-            weightsVector = weightsVector + alpha * error * dataArray[randIndex]
+            weightsVector += alpha * error * dataArray[randIndex]
             del(dataIndex[randIndex])
     return weightsVector
 

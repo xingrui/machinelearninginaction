@@ -12,33 +12,33 @@ import logRegres
 def stocGradAscent0(dataArray, classLabels):
     m,n = shape(dataArray)
     alpha = 0.5
-    weights = ones(n)   #initialize to all ones
+    weightsVector = ones(n)   #initialize to all ones
     weightsHistory=zeros((500*m,n))
     for j in range(500):
         for i in range(m):
-            h = logRegres.sigmoid(sum(dataArray[i]*weights))
+            h = logRegres.sigmoid(vdot(dataArray[i],weightsVector))
             error = classLabels[i] - h
-            weights = weights + alpha * error * dataArray[i]
-            weightsHistory[j*m + i] = weights
+            weightsVector += alpha * error * dataArray[i]
+            weightsHistory[j*m + i] = weightsVector
     return weightsHistory
 
 def stocGradAscent1(dataArray, classLabels):
     m,n = shape(dataArray)
     alpha = 0.4
-    weights = ones(n)   #initialize to all ones
+    weightsVector = ones(n)   #initialize to all ones
     weightsHistory=zeros((40*m,n))
     for j in range(40):
         dataIndex = range(m)
         for i in range(m):
             alpha = 4/(1.0+j+i)+0.01
             randIndex = int(random.uniform(0,len(dataIndex)))
-            h = logRegres.sigmoid(sum(dataArray[randIndex]*weights))
+            h = logRegres.sigmoid(vdot(dataArray[randIndex],weightsVector))
             error = classLabels[randIndex] - h
             #print error
-            weights = weights + alpha * error * dataArray[randIndex]
-            weightsHistory[j*m + i] = weights
+            weightsVector += alpha * error * dataArray[randIndex]
+            weightsHistory[j*m + i] = weightsVector
             del(dataIndex[randIndex])
-    print weights
+    print weightsVector
     return weightsHistory
     
 
