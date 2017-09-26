@@ -92,19 +92,15 @@ def img2vector(filename):
 def handwritingClassTest():
     hwLabels = []
     trainingFileList = listdir('trainingDigits')           #load the training set
-    m = len(trainingFileList)
-    trainingArray = zeros((m,1024))
-    for i in range(m):
-        fileNameStr = trainingFileList[i]
+    trainingArray = zeros((len(trainingFileList),1024))
+    for i, fileNameStr in enumerate(trainingFileList):
         fileStr = fileNameStr.split('.')[0]     #take off .txt
         classNumStr = int(fileStr.split('_')[0])
         hwLabels.append(classNumStr)
         trainingArray[i] = img2vector('trainingDigits/%s' % fileNameStr)
     testFileList = listdir('testDigits')        #iterate through the test set
     errorCount = 0.0
-    mTest = len(testFileList)
-    for i in range(mTest):
-        fileNameStr = testFileList[i]
+    for i, fileNameStr in enumerate(testFileList):
         fileStr = fileNameStr.split('.')[0]     #take off .txt
         classNumStr = int(fileStr.split('_')[0])
         vectorUnderTest = img2vector('testDigits/%s' % fileNameStr)
@@ -112,4 +108,4 @@ def handwritingClassTest():
         print "the classifier came back with: %d, the real answer is: %d" % (classifierResult, classNumStr)
         if (classifierResult != classNumStr): errorCount += 1.0
     print "\nthe total number of errors is: %d" % errorCount
-    print "\nthe total error rate is: %f" % (errorCount/float(mTest))
+    print "\nthe total error rate is: %f" % (errorCount/float(len(testFileList)))

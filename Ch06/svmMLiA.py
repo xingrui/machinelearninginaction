@@ -239,10 +239,8 @@ def loadImages(dirName):
     from os import listdir
     hwLabels = []
     trainingFileList = listdir(dirName)           #load the training set
-    m = len(trainingFileList)
-    trainingArray = zeros((m,1024))
-    for i in range(m):
-        fileNameStr = trainingFileList[i]
+    trainingArray = zeros((len(trainingFileList),1024))
+    for i, fileNameStr in enumerate(trainingFileList):
         fileStr = fileNameStr.split('.')[0]     #take off .txt
         classNumStr = int(fileStr.split('_')[0])
         if classNumStr == 9: hwLabels.append(-1)
