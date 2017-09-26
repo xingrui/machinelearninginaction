@@ -53,8 +53,8 @@ def plotWs(finalWs, dataArray, labelArr):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     x1=[]; y1=[]; xm1=[]; ym1=[]
-    for i in range(len(labelArr)):
-        if labelArr[i] == 1.0:
+    for i, label in enumerate(labelArr):
+        if label == 1.0:
             x1.append(dataArray[i,0]); y1.append(dataArray[i,1])
         else:
             xm1.append(dataArray[i,0]); ym1.append(dataArray[i,1])

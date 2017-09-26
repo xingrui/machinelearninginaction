@@ -18,8 +18,8 @@ def loadDataSet():
 
 def changeListToMap(vocabList):
     vocabMap = {}
-    for i in xrange(len(vocabList)):
-        vocabMap[vocabList[i]] = i
+    for i, vocab in enumerate(vocabList):
+        vocabMap[vocab] = i
     return vocabMap
                  
 def createVocabList(dataSet):

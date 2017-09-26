@@ -21,8 +21,8 @@ ycord1 = []
 markers =[]
 colors =[]
 
-for i in range(len(classLabels)):
-    if classLabels[i]==1.0:
+for i, classLabel in enumerate(classLabels):
+    if classLabel==1.0:
         xcord1.append(dataArray[i,0]), ycord1.append(dataArray[i,1])
     else:
         xcord0.append(dataArray[i,0]), ycord0.append(dataArray[i,1])
