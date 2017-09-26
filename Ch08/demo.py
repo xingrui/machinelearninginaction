@@ -23,9 +23,9 @@ def lwlrRegression():
     xSort = xArray[srtInd]
     import matplotlib.pyplot as plt
     fig = plt.figure()
-    param = [1.0, 0.04, 0.01, 0.003]
-    for i in xrange(len(param)):
-        yHat = regression.lwlrTest(xArray,xArray, yVector,param[i])
+    paramList = [1.0, 0.04, 0.01, 0.003]
+    for i, param in enumerate(param):
+        yHat = regression.lwlrTest(xArray,xArray, yVector,param)
         ax = fig.add_subplot(2,2,i+1)
         ax.scatter(xArray[:,1],yVector,s=2,c='red')
         ax.plot(xSort[:,1],yHat[srtInd])
