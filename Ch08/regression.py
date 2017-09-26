@@ -25,11 +25,9 @@ def standRegres(xArr,yArr):
 
 def lwlr(testPoint,xArr,yArr,k=1.0):
     xArray = array(xArr); yVector = array(yArr)
-    m = shape(xArray)[0]
-    weights = eye(m)
-    for j in range(m):                      #next 2 lines create weights matrix
-        diffVector = testPoint - xArray[j]     #
-        weights[j,j] = exp(sum(square(diffVector))/(-2.0*k**2))
+    distanceVector = square(testPoint - xArray).sum(axis=1)
+    weightsVector = exp(distanceVector/(-2.0*k**2))
+    weights = diag(weightsVector)
     xTx = dot(xArray.T, dot(weights, xArray))
     if linalg.det(xTx) == 0.0:
         print "This matrix is singular, cannot do inverse"

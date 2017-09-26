@@ -24,7 +24,7 @@ def lwlrRegression():
     import matplotlib.pyplot as plt
     fig = plt.figure()
     paramList = [1.0, 0.04, 0.01, 0.003]
-    for i, param in enumerate(param):
+    for i, param in enumerate(paramList):
         yHat = regression.lwlrTest(xArray,xArray, yVector,param)
         ax = fig.add_subplot(2,2,i+1)
         ax.scatter(xArray[:,1],yVector,s=2,c='red')
