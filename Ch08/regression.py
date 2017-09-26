@@ -43,12 +43,10 @@ def lwlrTest(testArr,xArr,yArr,k=1.0):  #loops over all the data points and appl
         yHat[i] = lwlr(testArray[i],xArr,yArr,k)
     return yHat
 
-def lwlrTestPlot(xArr,yArr,k=1.0):  #same thing as lwlrTest except it sorts X first
-    yHat = zeros(shape(yArr))       #easier for plotting
+def lwlrTestPlot(xArr,yArr,k=1.0):
     xCopy = array(xArr)
     xCopy.sort(0)
-    for i in range(shape(xArr)[0]):
-        yHat[i] = lwlr(xCopy[i],xArr,yArr,k)
+    yHat = lwlrTest(xCopy,xArr,yArr,k)
     return yHat,xCopy
 
 def rssError(yArr,yHatArr): #yArr and yHatArr both need to be arrays

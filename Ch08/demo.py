@@ -19,16 +19,14 @@ def lwlrRegression():
     xArr, yArr = regression.loadDataSet('ex0.txt')
     xArray = array(xArr)
     yVector = array(yArr)
-    srtInd = xArray[:,1].argsort(0)
-    xSort = xArray[srtInd]
     import matplotlib.pyplot as plt
     fig = plt.figure()
     paramList = [1.0, 0.04, 0.01, 0.003]
     for i, param in enumerate(paramList):
-        yHat = regression.lwlrTest(xArray,xArray, yVector,param)
+        yHat, xCopy = regression.lwlrTestPlot(xArray,yVector,param)
         ax = fig.add_subplot(2,2,i+1)
         ax.scatter(xArray[:,1],yVector,s=2,c='red')
-        ax.plot(xSort[:,1],yHat[srtInd])
+        ax.plot(xCopy[:,1],yHat)
     plt.show()
 
 def abaloneTest():

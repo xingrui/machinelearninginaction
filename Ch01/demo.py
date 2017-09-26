@@ -150,6 +150,15 @@ def testVdotMatrix():
     print 'passed_list:', res_list[0]
     assert len(res_list[1]) == 0, '!!!!!! vdot of matrix will have problem except_list: %s' % str(res_list[1])
 
+def testCopy():
+    a = array([[1,2],[3,4]])
+    b = array(a) # b is a copy of a
+    c = a # b is a copy of a
+    a[0,0] = 100 # c is another name of a
+    assert a[0,0] == 100
+    assert b[0,0] == 1
+    assert c[0,0] == 100
+
 def tryTest(function):
     print function.__name__, 'begin.'
     try:
@@ -170,6 +179,7 @@ def main():
     tryTest(testUsefulFunctions)
     tryTest(testVdotArray)
     tryTest(testVdotMatrix)
+    tryTest(testCopy)
 
 if __name__ == "__main__":
     main()
