@@ -1,5 +1,14 @@
 import apriori
 
+def testAprioriGen():
+    a=set('45')
+    b=set('46')
+    retList = apriori.aprioriGen([a,b],3)
+    assert len(retList) == 1
+    retList = apriori.aprioriGenWithBug([a,b],3)
+    if len(retList) != 1:
+        print 'should return 1 actual return', len(retList)
+
 def simpleTests():
     dataSet = apriori.loadDataSet()
     L, suppData = apriori.apriori(dataSet)
@@ -12,3 +21,4 @@ def simpleTests():
 
 if __name__ == "__main__":
     simpleTests()
+    testAprioriGen()

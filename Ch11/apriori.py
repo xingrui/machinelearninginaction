@@ -35,13 +35,23 @@ def scanD(D, Ck, minSupport):
         supportData[key] = support
     return retList, supportData
 
-def aprioriGen(Lk, k): #creates Ck
+def aprioriGenWithBug(Lk, k): #creates Ck
     retList = []
     lenLk = len(Lk)
     for i in range(lenLk):
         for j in range(i+1, lenLk): 
             L1 = list(Lk[i])[:k-2]; L2 = list(Lk[j])[:k-2]
             L1.sort(); L2.sort()
+            if L1==L2: #if first k-2 elements are equal
+                retList.append(Lk[i] | Lk[j]) #set union
+    return retList
+
+def aprioriGen(Lk, k): #creates Ck (bug fixed).
+    retList = []
+    lenLk = len(Lk)
+    for i in range(lenLk):
+        for j in range(i+1, lenLk): 
+            L1 = sorted(list(Lk[i]))[:k-2]; L2 = sorted(list(Lk[j]))[:k-2] # should sort first
             if L1==L2: #if first k-2 elements are equal
                 retList.append(Lk[i] | Lk[j]) #set union
     return retList
