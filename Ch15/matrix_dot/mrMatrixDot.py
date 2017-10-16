@@ -14,8 +14,8 @@ class MRMatrixDot(MRJob):
 
     #needs exactly 2 arguments
     def map(self, key, val):
-        row_num, str_values = val.strip().split("\t", 2)
-        row_num = int(row_num) - 1
+        str_row_num, str_values = val.strip().split("\t", 2)
+        row_num = int(str_row_num) - 1
         values = map(float, str_values.split())
         if self.t == 0:
             for i, val in enumerate(values):
@@ -29,14 +29,13 @@ class MRMatrixDot(MRJob):
     def reduce(self, key, packedValues):
         pre_index = -1
         value = 0
+        index_product = 0
         for valArr in packedValues:
             current_index, val = valArr
-
             if pre_index != current_index:
-                if pre_index != -1:
-                    value += index_product
-                index_product = val
                 pre_index = current_index
+                value += index_product
+                index_product = val
             else:
                 index_product *= val
         value += index_product
