@@ -20,36 +20,27 @@ class MRMatrixDot(MRJob):
         if self.t == 0:
             for i, val in enumerate(values):
                 for j in xrange(self.P):
-                    yield (row_num, [j, i, val])
+                    yield ((row_num, j), [i, val])
         elif self.t == 1:
             for i, val in enumerate(values):
                 for j in xrange(self.M):
-                    yield (j, [i, row_num, val])
+                    yield ((j, i), [row_num, val])
 
     def reduce(self, key, packedValues):
-        row_num = key
-        pre_column = -1
         pre_index = -1
+        value = 0
         for valArr in packedValues:
-            current_column, current_index, val = valArr
-
-            if current_column != pre_column:
-                if pre_column != -1:
-                    location_sum += index_product
-                    yield ((row_num,pre_column),location_sum)
-                location_sum = 0
-                pre_column = current_column
-                pre_index = -1
+            current_index, val = valArr
 
             if pre_index != current_index:
                 if pre_index != -1:
-                    location_sum += index_product
+                    value += index_product
                 index_product = val
                 pre_index = current_index
             else:
                 index_product *= val
-        location_sum += index_product
-        yield ((row_num,pre_column),location_sum)
+        value += index_product
+        yield (key, value)
         
     def steps(self):
         return ([MRStep(mapper=self.map,\
